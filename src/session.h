@@ -40,6 +40,8 @@ class Session {
       case SessionScreen::ShowWords:
         if (key == '*' && page_) {
           --page_;
+        } else if (key == '*') {
+          screen_ = SessionScreen::EnterRolls;
         } else if (key == '#' && (page_ + 1) * kWordsPerPage < wordCount_) {
           ++page_;
         } else if (key == '#') {
@@ -146,8 +148,6 @@ class Session {
 
   void generate() {
     if (!generateMnemonicIndexes(rolls_, rollCount_, wordIndexes_, wordCount_)) return;
-    secureClear(rolls_, sizeof(rolls_));
-    rollCount_ = 0;
     page_ = 0;
     screen_ = SessionScreen::ShowWords;
   }

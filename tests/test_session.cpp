@@ -26,9 +26,14 @@ int main() {
   assert(session.rollCount() == 50);
   session.press('#');
   assert(session.screen() == SessionScreen::ShowWords && session.wordCount() == 12);
+  assert(session.rollCount() == 50);
   char word[12];
   wordAt(session.wordIndexAt(0), word, sizeof(word));
   assert(session.page() == 0 && strcmp(word, "unveil") == 0);
+  session.press('*');
+  assert(session.screen() == SessionScreen::EnterRolls && session.rollCount() == 50);
+  session.press('#');
+  assert(session.screen() == SessionScreen::ShowWords && session.page() == 0);
   session.press('#');
   session.press('#');
   session.press('#');
