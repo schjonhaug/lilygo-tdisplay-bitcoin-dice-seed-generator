@@ -1,6 +1,6 @@
 # LilyGO T-Display Dice Seed
 
-Offline BIP39 English mnemonic generator for the LilyGO TTGO T-Display with the LilyGO 4x3 keyboard module.
+Offline [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki) English mnemonic generator for the LilyGO TTGO T-Display with the LilyGO 4x3 keyboard module.
 
 <p align="center">
   <a href="https://lilygo.cc/products/t-display-keyboard"><img src="assets/lilygo-t-display-keyboard.jpg" alt="LilyGO T-Display Keyboard" width="360"></a>
@@ -8,12 +8,12 @@ Offline BIP39 English mnemonic generator for the LilyGO TTGO T-Display with the 
 
 <p align="center"><sub>Official product image from <a href="https://lilygo.cc/products/t-display-keyboard">LilyGO</a>.</sub></p>
 
-The firmware uses the same deterministic dice construction as SeedSigner and Coldcard's dedicated dice-only flow:
+The firmware uses the same deterministic dice construction as [SeedSigner](https://seedsigner.com/) and [Coldcard](https://coldcard.com/)'s dedicated dice-only flow:
 
 - 12 words: exactly 50 rolls, `SHA256(ASCII rolls)` truncated to 16 bytes.
 - 24 words: exactly 99 rolls, full `SHA256(ASCII rolls)` digest.
 
-It does not use the ESP32 RNG, convert dice to base 6, store seed material, enable networking, or log seed material to serial output.
+It does not use the [ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/) RNG, convert dice to base 6, store seed material, enable networking, or log seed material to serial output.
 
 ## Hardware
 
@@ -67,12 +67,8 @@ For an independent check, run SeedSigner locally or use an offline copy of [Ian 
 
 ## References
 
-- [BIP39 specification](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
-- [SeedSigner](https://seedsigner.com/)
 - [SeedSigner dice verification guide](https://github.com/SeedSigner/seedsigner/blob/main/docs/dice_verification.md)
-- [Coldcard](https://coldcard.com/)
 - [Coldcard dice-roll math](https://coldcard.com/docs/verifying-dice-roll-math)
-- [Espressif ESP32 documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/)
 - [Why Dice-Only Coldcard Seeds Were Unaffected by the RNG Bug](https://schjonhaug.dev/articles/why-dice-only-coldcard-seeds-were-unaffected-by-the-rng-bug/)
 
 ## Local Simulator
