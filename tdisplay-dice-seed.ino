@@ -10,6 +10,7 @@ constexpr byte kRows = 4;
 constexpr byte kColumns = 3;
 constexpr size_t kMaxRolls = 99;
 constexpr size_t kWordsPerPage = 4;
+constexpr size_t kRollsPerLine = 33;
 
 char keyMap[kRows][kColumns] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
 byte rowPins[kRows] = {21, 27, 26, 22};
@@ -52,15 +53,20 @@ void drawRollEntry() {
   header(requiredRolls == 50 ? "12 words: Dice rolls" : "24 words: Dice rolls");
   snprintf(line, sizeof(line), "%u / %u rolls", static_cast<unsigned>(rollCount), static_cast<unsigned>(requiredRolls));
   tft.drawString(line, 5, 31, 4);
-  tft.drawString("1-6: enter    *: undo", 5, 65, 2);
+  tft.drawString("1-6: enter", 5, 60, 1);
+  for (size_t offset = 0, row = 0; offset < rollCount; offset += kRollsPerLine, ++row) {
+    const size_t length = rollCount - offset < kRollsPerLine ? rollCount - offset : kRollsPerLine;
+    memcpy(line, rolls + offset, length);
+    line[length] = '\0';
+    tft.drawString(line, 5, 70 + row * 10, 1);
+    secureClear(line, sizeof(line));
+  }
   if (rollCount == requiredRolls) {
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
-    tft.drawString("#: review and generate", 5, 89, 2);
+    tft.drawString("*: undo      #: generate", 5, 113, 2);
   } else {
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-    tft.drawString("#: cancel to main menu", 5, 89, 2);
-    snprintf(line, sizeof(line), "%u more required", static_cast<unsigned>(requiredRolls - rollCount));
-    tft.drawString(line, 5, 111, 2);
+    tft.drawString("*: undo      #: main menu", 5, 113, 2);
   }
 }
 
@@ -81,9 +87,9 @@ void drawWords() {
   }
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   if ((page + 1) * kWordsPerPage < wordCount) {
-    tft.drawString("#: next     *: previous", 5, 113, 2);
+    tft.drawString("*: previous   #: next", 5, 113, 2);
   } else {
-    tft.drawString("#: verify     *: skip", 5, 113, 2);
+    tft.drawString("*: skip       #: verify", 5, 113, 2);
   }
 }
 
@@ -91,7 +97,7 @@ void drawVerifyPrompt() {
   header("Verify backup?");
   tft.drawString("Check every written word", 5, 42, 2);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawString("#: start quiz    *: skip", 5, 85, 2);
+  tft.drawString("*: skip      #: start quiz", 5, 113, 2);
 }
 
 uint32_t nextQuizValue() {
@@ -164,7 +170,7 @@ void drawSkipQuizConfirmation() {
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   tft.drawString("Your backup is untested.", 5, 43, 2);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.drawString("#: skip      *: resume", 5, 87, 2);
+  tft.drawString("*: resume    #: skip", 5, 114, 2);
 }
 
 void drawClearWords(bool verified) {
@@ -172,7 +178,7 @@ void drawClearWords(bool verified) {
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   tft.drawString("Seed has been cleared.", 5, 42, 2);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.drawString("#: clear and restart", 5, 84, 2);
+  tft.drawString("#: clear and restart", 5, 114, 2);
 }
 
 void clearSession() {

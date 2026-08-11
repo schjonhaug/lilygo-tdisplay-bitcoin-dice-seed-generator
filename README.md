@@ -1,6 +1,6 @@
 # T-Display Dice Seed
 
-Offline BIP39 English mnemonic generator for the LilyGO TTGO T-Display with the LilyGO 4x3 keyboard module used by LNPoS.
+Offline BIP39 English mnemonic generator for the LilyGO TTGO T-Display with the LilyGO 4x3 keyboard module.
 
 The firmware uses the same deterministic dice construction as SeedSigner and Coldcard's dedicated dice-only flow:
 
@@ -11,8 +11,8 @@ It does not use the ESP32 RNG, convert dice to base 6, store seed material, enab
 
 ## Hardware
 
-- LilyGO TTGO T-Display ESP32 with ST7789 display.
-- LilyGO 4x3 keyboard module.
+- [LilyGO TTGO T-Display](https://lilygo.cc/products/t-display) ESP32 with ST7789 display.
+- [LilyGO T-Display keyboard](https://lilygo.cc/products/t-display-keyboard) 4x3 keyboard module.
 - Keypad rows: GPIO `21`, `27`, `26`, `22`.
 - Keypad columns: GPIO `33`, `32`, `25`.
 
@@ -39,10 +39,18 @@ arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build --port /dev/
 
 The test suite checks these public compatibility vectors:
 
-- SeedSigner 50-roll vector: `12345612345612345612345612345612345612345612345612`.
-- The public 99-roll test sequence and mnemonic from [Why Dice-Only Coldcard Seeds Were Unaffected by the RNG Bug](https://schjonhaug.dev/articles/why-dice-only-coldcard-seeds-were-unaffected-by-the-rng-bug/).
+- Three 50-roll SeedSigner vectors: a mixed sequence, all `1`s, and all `6`s.
+- Three known 99-roll SeedSigner vectors.
+- The public 99-roll test sequence and mnemonic from [Why Dice-Only Coldcard Seeds Were Unaffected by the RNG Bug](https://schjonhaug.dev/articles/why-dice-only-coldcard-seeds-were-unaffected-by-the-rng-bug/), independently checked on SeedSigner and Coldcard.
 
 For an independent check, run SeedSigner locally or use an offline Ian Coleman copy with entropy interpreted as `Base 10 [0-9]` or `Hex [0-9A-F]`, not `Dice [1-6]`.
+
+## References
+
+- [BIP39 specification](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
+- [SeedSigner dice verification guide](https://github.com/SeedSigner/seedsigner/blob/main/docs/dice_verification.md)
+- [Coldcard dice-roll math](https://coldcard.com/docs/verifying-dice-roll-math)
+- [Why Dice-Only Coldcard Seeds Were Unaffected by the RNG Bug](https://schjonhaug.dev/articles/why-dice-only-coldcard-seeds-were-unaffected-by-the-rng-bug/)
 
 ## Local Simulator
 
@@ -61,4 +69,4 @@ node tools/generate_wordlist_header.mjs
 open simulator/index.html
 ```
 
-Click `Load public 99-roll article vector`, then press `#` twice to view the words. The browser simulator is only for public vectors and UI review.
+Click `Load public 99-roll article vector`, then press `#` to view the words. The browser simulator is only for public vectors and UI review.
