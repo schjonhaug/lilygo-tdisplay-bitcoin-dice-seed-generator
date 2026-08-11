@@ -30,7 +30,7 @@ The build uses the known-good T-Display `TFT_eSPI` setup vendored by the adjacen
 cd ~/Developer/tdisplay-dice-seed
 ./tests/run.sh
 ./build.sh
-arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build --port /dev/tty.usbserial-XXXX
+arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build --port /dev/tty.usbserial-XXXX --upload-property upload.speed=115200
 ```
 
 `build.sh` installs Arduino ESP32 core `2.0.17` and `Keypad`. Install `arduino-cli` before running it.
