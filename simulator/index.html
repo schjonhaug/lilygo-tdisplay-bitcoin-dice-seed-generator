@@ -48,7 +48,7 @@
         screen.innerHTML = `<div class="title" style="font-size:1.55em">Dice Seed Generator</div><div class="choice">1: 12 words</div><div class="choice-detail">50 dice rolls</div><div class="choice">2: 24 words</div><div class="choice-detail">99 dice rolls</div>`;
       } else if (state === "entry") {
         const ready = rolls.length === required;
-        const enteredRolls = rolls.slice(-36).match(/.{1,18}/g)?.join("<br>") || "";
+        const enteredRolls = rolls.slice(-38).match(/.{1,19}/g)?.join("<br>") || "";
         screen.innerHTML = `<div class="title">${required === 50 ? "12" : "24"} words: Dice rolls</div><div style="font-size:1.75em">${rolls.length} / ${required} rolls</div><div class="rolls">${enteredRolls}</div><div class="footer ${ready ? "green" : "yellow"}"><span>*: undo</span><span>#: ${ready ? "generate" : "main menu"}</span></div>`;
       } else if (state === "working") {
         screen.innerHTML = `<div class="title">Generating</div><br><div class="yellow">Calculating mnemonic...</div>`;

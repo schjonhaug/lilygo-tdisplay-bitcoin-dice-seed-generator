@@ -10,7 +10,7 @@ constexpr byte kRows = 4;
 constexpr byte kColumns = 3;
 constexpr size_t kMaxRolls = 99;
 constexpr size_t kWordsPerPage = 4;
-constexpr size_t kRollsPerLine = 18;
+constexpr size_t kRollsPerLine = 19;
 constexpr size_t kVisibleRollLines = 2;
 
 char keyMap[kRows][kColumns] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
@@ -54,10 +54,10 @@ void drawChooseLength() {
   tft.setTextDatum(TL_DATUM);
   tft.drawString("Dice Seed Generator", 5, 5, 4);
   tft.drawFastHLine(0, 39, 240, TFT_DARKGREY);
-  tft.drawString("1: 12 words", 17, 49, 4);
-  tft.drawString("50 dice rolls", 22, 77, 2);
-  tft.drawString("2: 24 words", 17, 91, 4);
-  tft.drawString("99 dice rolls", 22, 119, 2);
+  tft.drawString("1: 12 words", 17, 45, 4);
+  tft.drawString("50 dice rolls", 22, 73, 1);
+  tft.drawString("2: 24 words", 17, 92, 4);
+  tft.drawString("99 dice rolls", 22, 120, 1);
 }
 
 void drawRollEntry() {
