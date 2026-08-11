@@ -2,6 +2,12 @@
 
 Offline BIP39 English mnemonic generator for the LilyGO TTGO T-Display with the LilyGO 4x3 keyboard module.
 
+<p align="center">
+  <a href="https://lilygo.cc/products/t-display-keyboard"><img src="assets/lilygo-t-display-keyboard.jpg" alt="LilyGO T-Display Keyboard" width="360"></a>
+</p>
+
+<p align="center"><sub>Official product image from <a href="https://lilygo.cc/products/t-display-keyboard">LilyGO</a>.</sub></p>
+
 The firmware uses the same deterministic dice construction as SeedSigner and Coldcard's dedicated dice-only flow:
 
 - 12 words: exactly 50 rolls, `SHA256(ASCII rolls)` truncated to 16 bytes.
