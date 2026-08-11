@@ -1,4 +1,4 @@
-# T-Display Dice Seed
+# LilyGO T-Display Dice Seed
 
 Offline BIP39 English mnemonic generator for the LilyGO TTGO T-Display with the LilyGO 4x3 keyboard module.
 
