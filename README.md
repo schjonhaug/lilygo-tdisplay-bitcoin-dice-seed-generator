@@ -18,22 +18,36 @@ It does not use the ESP32 RNG, convert dice to base 6, store seed material, enab
 
 ## Controls
 
-- Start screen: `1` selects 12 words; `2` selects 24 words.
-- Dice entry: `1` through `6` enter rolls; `*` removes the latest roll.
-- Before the exact roll count, `#` cancels to the main menu. At exactly 50 or 99 rolls, `#` generates the mnemonic immediately. After the final word page, `#` starts a shuffled all-word backup quiz; `*` skips it. During the quiz, keys `1` through `4` select the displayed answer and `*` offers a confirmed skip.
+**Select length**
+
+`1` selects a 12-word mnemonic with 50 rolls. `2` selects a 24-word mnemonic with 99 rolls.
+
+**Enter dice rolls**
+
+`1` through `6` enter die faces. `*` removes the latest roll. Before the required count, `#` cancels to the main menu. At exactly 50 or 99 rolls, `#` generates the mnemonic immediately.
+
+**Review mnemonic**
+
+`*` shows the previous word page and `#` shows the next page. On the final page, `*` skips backup verification and `#` starts it.
+
+**Verify backup**
+
+Each of the 12 or 24 words is tested in shuffled order. Select one of four choices with `1` through `4`. `*` opens the skip confirmation; there, `*` resumes verification and `#` skips it. After completion or a confirmed skip, `#` clears sensitive memory and returns to the main menu.
 
 ## Build
 
-The build uses the known-good T-Display `TFT_eSPI` setup vendored by the adjacent `~/Developer/lnpos` checkout. It is a build-time display-driver dependency only; LNPoS firmware and configuration are not included in the output.
+The build script installs the pinned ESP32 core plus `Keypad` and `TFT_eSPI`, then configures the display driver for the T-Display pins.
 
 ```sh
-cd ~/Developer/tdisplay-dice-seed
+git clone https://github.com/schjonhaug/lilygo-tdisplay-dice-seed.git
+cd lilygo-tdisplay-dice-seed
 ./tests/run.sh
 ./build.sh
-arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build --port /dev/tty.usbserial-XXXX --upload-property upload.speed=115200
+arduino-cli board list
+arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build --port <port> --upload-property upload.speed=115200
 ```
 
-`build.sh` installs Arduino ESP32 core `2.0.17` and `Keypad`. Install `arduino-cli` before running it.
+Install [Arduino CLI](https://arduino.github.io/arduino-cli/latest/installation/) before building. Use the port reported by `arduino-cli board list`; on macOS it is commonly `/dev/cu.usbserial-XXXX`.
 
 ## Verification
 
@@ -43,13 +57,16 @@ The test suite checks these public compatibility vectors:
 - Three known 99-roll SeedSigner vectors.
 - The public 99-roll test sequence and mnemonic from [Why Dice-Only Coldcard Seeds Were Unaffected by the RNG Bug](https://schjonhaug.dev/articles/why-dice-only-coldcard-seeds-were-unaffected-by-the-rng-bug/), independently checked on SeedSigner and Coldcard.
 
-For an independent check, run SeedSigner locally or use an offline Ian Coleman copy with entropy interpreted as `Base 10 [0-9]` or `Hex [0-9A-F]`, not `Dice [1-6]`.
+For an independent check, run SeedSigner locally or use an offline copy of [Ian Coleman's BIP39 tool](https://github.com/iancoleman/bip39) with entropy interpreted as `Base 10 [0-9]` or `Hex [0-9A-F]`, not `Dice [1-6]`.
 
 ## References
 
 - [BIP39 specification](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
+- [SeedSigner](https://seedsigner.com/)
 - [SeedSigner dice verification guide](https://github.com/SeedSigner/seedsigner/blob/main/docs/dice_verification.md)
+- [Coldcard](https://coldcard.com/)
 - [Coldcard dice-roll math](https://coldcard.com/docs/verifying-dice-roll-math)
+- [Espressif ESP32 documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/)
 - [Why Dice-Only Coldcard Seeds Were Unaffected by the RNG Bug](https://schjonhaug.dev/articles/why-dice-only-coldcard-seeds-were-unaffected-by-the-rng-bug/)
 
 ## Local Simulator
