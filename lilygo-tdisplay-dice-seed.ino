@@ -10,7 +10,7 @@ constexpr byte kRows = 4;
 constexpr byte kColumns = 3;
 constexpr size_t kMaxRolls = 99;
 constexpr size_t kWordsPerPage = 4;
-constexpr size_t kRollsPerLine = 19;
+constexpr size_t kRollsPerLine = 25;
 constexpr size_t kVisibleRollLines = 2;
 
 char keyMap[kRows][kColumns] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
@@ -21,6 +21,7 @@ TFT_eSPI tft;
 
 enum class Screen { ChooseLength, EnterRolls, ShowWords, VerifyPrompt, Quiz, ConfirmSkipQuiz, ClearWords };
 Screen screen = Screen::ChooseLength;
+Screen skipReturnScreen = Screen::ShowWords;
 char rolls[kMaxRolls];
 size_t rollCount = 0;
 size_t requiredRolls = 0;
@@ -50,13 +51,17 @@ void drawFooter(const char* left, const char* right, uint16_t y = 113) {
 
 void drawChooseLength() {
   tft.fillScreen(TFT_BLACK);
-  tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextDatum(TL_DATUM);
-  tft.drawString("Dice Seed Generator", 5, 5, 4);
+  tft.setTextColor(TFT_CYAN, TFT_BLACK);
+  tft.drawString("Dice Seed Gen", 5, 5, 4);
   tft.drawFastHLine(0, 39, 240, TFT_DARKGREY);
+  tft.setTextColor(TFT_GREEN, TFT_BLACK);
   tft.drawString("1: 12 words", 17, 45, 4);
+  tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
   tft.drawString("50 dice rolls", 22, 73, 1);
+  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   tft.drawString("2: 24 words", 17, 92, 4);
+  tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
   tft.drawString("99 dice rolls", 22, 120, 1);
 }
 
@@ -98,11 +103,7 @@ void drawWords() {
     secureClear(word, sizeof(word));
   }
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  if ((page + 1) * kWordsPerPage < wordCount) {
-    drawFooter("*: previous", "#: next");
-  } else {
-    drawFooter("*: skip", "#: verify");
-  }
+  drawFooter("*: previous", "#: next");
 }
 
 void drawVerifyPrompt() {
@@ -273,8 +274,6 @@ void loop() {
       } else if (key == '#') {
         screen = Screen::VerifyPrompt;
         drawVerifyPrompt();
-      } else if (key == '*') {
-        finishSeedDisplay(false);
       }
       break;
     case Screen::VerifyPrompt:
@@ -284,7 +283,9 @@ void loop() {
         screen = Screen::Quiz;
         drawQuiz();
       } else if (key == '*') {
-        finishSeedDisplay(false);
+        skipReturnScreen = Screen::VerifyPrompt;
+        screen = Screen::ConfirmSkipQuiz;
+        drawSkipQuizConfirmation();
       }
       break;
     case Screen::Quiz:
@@ -299,6 +300,7 @@ void loop() {
           }
         }
       } else if (key == '*') {
+        skipReturnScreen = Screen::Quiz;
         screen = Screen::ConfirmSkipQuiz;
         drawSkipQuizConfirmation();
       }
@@ -307,8 +309,14 @@ void loop() {
       if (key == '#') {
         finishSeedDisplay(false);
       } else if (key == '*') {
-        screen = Screen::Quiz;
-        drawQuiz();
+        screen = skipReturnScreen;
+        if (screen == Screen::ShowWords) {
+          drawWords();
+        } else if (screen == Screen::VerifyPrompt) {
+          drawVerifyPrompt();
+        } else {
+          drawQuiz();
+        }
       }
       break;
     case Screen::ClearWords:

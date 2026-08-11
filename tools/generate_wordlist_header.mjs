@@ -16,4 +16,3 @@ for (let index = 0; index < words.length; index += 12) {
 }
 const output = `// Generated from iancoleman-bip39/src/js/wordlist_english.js.\n#pragma once\n\nstatic const char kEnglishWords[] =\n${lines.join("\n")}\n    ;\n`;
 writeFileSync(new URL("../src/wordlist_english.h", import.meta.url), output);
-writeFileSync(new URL("../simulator/wordlist.js", import.meta.url), `// Generated from iancoleman-bip39/src/js/wordlist_english.js.\nwindow.ENGLISH_WORDS = ${JSON.stringify(words)};\n`);

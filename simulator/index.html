@@ -19,6 +19,9 @@
     #screen .rolls { font-size: 1.1em; letter-spacing: 0.04em; min-height: 2.5em; }
     #screen .choice { font-size: 1.45em; line-height: 1.1; margin-top: 0.3em; }
     #screen .choice-detail { margin-left: 0.5em; opacity: 0.75; }
+    #screen .choice-green { color: #64d98b; }
+    #screen .choice-amber { color: #f4d35e; }
+    #screen .title-cyan { color: #71d8e9; }
     .keypad { background: #1e2226; display: grid; gap: 8px; grid-template-columns: repeat(3, 1fr); padding: 16px; }
     button { background: #4b535a; border: 0; border-radius: 7px; color: white; cursor: pointer; font: inherit; min-height: 44px; }
     button:hover { background: #69737a; } button:active { transform: translateY(1px); }
@@ -32,36 +35,50 @@
     <p class="warning">Visual and public-test-vector tool only. Do not enter real dice rolls or create real seed words in a browser.</p>
     <div class="device"><div id="screen"></div><div class="keypad" id="keypad"></div></div>
     <div class="actions"><button id="article-vector">Load public 99-roll article vector</button><button id="reset">Reset</button></div>
-    <p>Click the keypad or use keyboard digits, <code>*</code>, and <code>#</code>. This models the device display and keypad flow; its production firmware is separately tested and compiled from the C++ source.</p>
+    <p>Click the keypad or use keyboard digits, <code>*</code>, and <code>#</code>. The UI is JavaScript, while mnemonic generation and word lookup run through the firmware's C++ code compiled to WebAssembly.</p>
   </main>
-  <script src="wordlist.js"></script>
-  <script>
+  <script type="module">
+    import createMnemonicModule from "./mnemonic_wasm.js";
+
     const publicArticleRolls = "133363436436436415622614221225242212144161454643266122155666664444633643543353132626522332412313253";
     const screen = document.querySelector("#screen");
     const keypad = document.querySelector("#keypad");
-    let state = "choose", rolls = "", required = 0, words = [], indexes = [], page = 0;
+    let state = "loading", rolls = "", required = 0, words = [], indexes = [], page = 0;
     let quizOrder = [], quizChoices = [], quizPosition = 0, quizRandomState = 0, quizMessage = "", verified = false;
+    let skipReturnState = "words";
+    let wasm;
+    const wasmReady = createMnemonicModule().then((module) => {
+      wasm = module;
+      state = "choose";
+      render();
+    }).catch(() => {
+      state = "error";
+      render();
+    });
     const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"];
 
     function render() {
-      if (state === "choose") {
-        screen.innerHTML = `<div class="title" style="font-size:1.55em">Dice Seed Generator</div><div class="choice">1: 12 words</div><div class="choice-detail">50 dice rolls</div><div class="choice">2: 24 words</div><div class="choice-detail">99 dice rolls</div>`;
+      if (state === "loading") {
+        screen.innerHTML = `<div class="title">Loading simulator</div><div class="yellow">Loading canonical C++ logic...</div>`;
+      } else if (state === "error") {
+        screen.innerHTML = `<div class="title">Simulator unavailable</div><div class="yellow">Run tools/build-wasm.sh, then serve this folder over HTTP.</div>`;
+      } else if (state === "choose") {
+        screen.innerHTML = `<div class="title title-cyan" style="font-size:1.55em">Dice Seed Gen</div><div class="choice choice-green">1: 12 words</div><div class="choice-detail">50 dice rolls</div><div class="choice choice-amber">2: 24 words</div><div class="choice-detail">99 dice rolls</div>`;
       } else if (state === "entry") {
         const ready = rolls.length === required;
-        const enteredRolls = rolls.slice(-38).match(/.{1,19}/g)?.join("<br>") || "";
+        const enteredRolls = rolls.slice(-50).match(/.{1,25}/g)?.join("<br>") || "";
         screen.innerHTML = `<div class="title">${required === 50 ? "12" : "24"} words: Dice rolls</div><div style="font-size:1.75em">${rolls.length} / ${required} rolls</div><div class="rolls">${enteredRolls}</div><div class="footer ${ready ? "green" : "yellow"}"><span>*: undo</span><span>#: ${ready ? "generate" : "main menu"}</span></div>`;
       } else if (state === "working") {
         screen.innerHTML = `<div class="title">Generating</div><br><div class="yellow">Calculating mnemonic...</div>`;
       } else if (state === "words") {
         const from = page * 4, shown = words.slice(from, from + 4);
         const lines = shown.map((word, i) => `${String(from + i + 1).padStart(2, " ")}. ${word}`).join("<br>");
-        const last = from + 4 >= words.length;
-        screen.innerHTML = `<div class="title">Write words ${from + 1}-${Math.min(from + 4, words.length)}</div>${lines}<div class="yellow footer"><span>${last ? "*: skip" : "*: previous"}</span><span>${last ? "#: verify" : "#: next"}</span></div>`;
+        screen.innerHTML = `<div class="title">Write words ${from + 1}-${Math.min(from + 4, words.length)}</div>${lines}<div class="yellow footer"><span>*: previous</span><span>#: next</span></div>`;
       } else if (state === "verify") {
         screen.innerHTML = `<div class="title">Verify backup?</div><div>Check every written word</div><div class="yellow footer"><span>*: skip</span><span>#: start quiz</span></div>`;
       } else if (state === "quiz") {
         const question = quizOrder[quizPosition] + 1;
-        const choices = quizChoices.map((index, i) => `${i + 1}. ${window.ENGLISH_WORDS[index]}`).join("<br>");
+        const choices = quizChoices.map((index, i) => `${i + 1}. ${wordFromIndex(index)}`).join("<br>");
         screen.innerHTML = `<div class="title">Verify ${quizPosition + 1}/${words.length}</div><div>What is word ${question}?</div>${choices}<div class="yellow footer">${quizMessage || "*: skip verification"}</div>`;
       } else if (state === "skip-confirm") {
         screen.innerHTML = `<div class="title">Skip verification?</div><div class="yellow">Your backup is untested.</div><div class="footer"><span>*: resume</span><span>#: skip</span></div>`;
@@ -70,15 +87,26 @@
       }
     }
 
+    function wordFromIndex(index) {
+      const output = wasm._malloc(12);
+      const length = wasm._mnemonic_word(index, output, 12);
+      const word = String.fromCharCode(...wasm.HEAPU8.subarray(output, output + length));
+      wasm._free(output);
+      return word;
+    }
+
     async function deriveWords() {
-      const entropyDigest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rolls)));
-      const entropy = entropyDigest.slice(0, required === 50 ? 16 : 32);
-      const checksum = new Uint8Array(await crypto.subtle.digest("SHA-256", entropy));
-      const entropyBits = entropy.length * 8, count = entropy.length === 16 ? 12 : 24;
-      const bit = (position) => position < entropyBits ? (entropy[Math.floor(position / 8)] >> (7 - position % 8)) & 1 : (checksum[Math.floor((position - entropyBits) / 8)] >> (7 - (position - entropyBits) % 8)) & 1;
-      indexes = Array.from({length: count}, (_, word) => Array.from({length: 11}, (_, offset) => bit(word * 11 + offset)).reduce((index, value) => (index << 1) | value, 0));
-      words = indexes.map((index) => window.ENGLISH_WORDS[index]);
-      entropyDigest.fill(0); entropy.fill(0); checksum.fill(0); rolls = ""; page = 0; state = "words"; render();
+      await wasmReady;
+      const rollBytes = new TextEncoder().encode(rolls);
+      const rollPointer = wasm._malloc(rollBytes.length);
+      const indexPointer = wasm._malloc(24 * Uint16Array.BYTES_PER_ELEMENT);
+      wasm.HEAPU8.set(rollBytes, rollPointer);
+      const count = wasm._generate_mnemonic_indexes(rollPointer, rollBytes.length, indexPointer);
+      indexes = Array.from(wasm.HEAPU16.subarray(indexPointer / 2, indexPointer / 2 + count));
+      wasm._free(indexPointer);
+      wasm._free(rollPointer);
+      words = indexes.map(wordFromIndex);
+      rolls = ""; page = 0; state = "words"; render();
     }
 
     function nextQuizValue() {
@@ -127,12 +155,11 @@
       else if (state === "entry" && key === "*" && !rolls.length) { state = "choose"; required = 0; }
       else if (state === "entry" && key === "#" && rolls.length === required) { state = "working"; render(); deriveWords(); return; }
       else if (state === "entry" && key === "#") { state = "choose"; rolls = ""; required = 0; }
-      else if (state === "words" && key === "*" && (page + 1) * 4 >= words.length) finishSeedDisplay(false);
       else if (state === "words" && key === "*" && page) page--;
       else if (state === "words" && key === "#" && (page + 1) * 4 < words.length) page++;
       else if (state === "words" && key === "#") state = "verify";
       else if (state === "verify" && key === "#") startQuiz();
-      else if (state === "verify" && key === "*") finishSeedDisplay(false);
+      else if (state === "verify" && key === "*") { skipReturnState = "verify"; state = "skip-confirm"; }
       else if (state === "quiz" && /^[1-4]$/.test(key)) {
         if (quizChoices[Number(key) - 1] === indexes[quizOrder[quizPosition]]) {
           quizPosition++;
@@ -140,9 +167,9 @@
           else { quizMessage = ""; prepareQuizChoices(); }
         } else quizMessage = "Incorrect. Try again.";
       }
-      else if (state === "quiz" && key === "*") state = "skip-confirm";
+      else if (state === "quiz" && key === "*") { skipReturnState = "quiz"; state = "skip-confirm"; }
       else if (state === "skip-confirm" && key === "#") finishSeedDisplay(false);
-      else if (state === "skip-confirm" && key === "*") state = "quiz";
+      else if (state === "skip-confirm" && key === "*") state = skipReturnState;
       else if (state === "clear" && key === "#") { state = "choose"; required = 0; verified = false; }
       render();
     }

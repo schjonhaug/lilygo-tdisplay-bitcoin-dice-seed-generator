@@ -81,11 +81,13 @@ Use the terminal simulator to verify public test data against the exact firmware
 
 It prints the 24 public words from the article. Do not pass real dice rolls to this command: command-line arguments can be saved in shell history and visible to other local processes.
 
-For a visual simulation of the display and keypad, regenerate its wordlist if needed and open `simulator/index.html` in a browser:
+For a visual simulation of the display and keypad, build the WebAssembly module and serve the simulator locally:
 
 ```sh
-node tools/generate_wordlist_header.mjs
-open simulator/index.html
+brew install emscripten # or install Emscripten by another method
+./tools/build-wasm.sh
+node tests/test_wasm.mjs
+./tools/serve-simulator.sh
 ```
 
-Click `Load public 99-roll article vector`, then press `#` to view the words. The browser simulator is only for public vectors and UI review.
+Open `http://localhost:8000`, click `Load public 99-roll article vector`, then press `#` to view the words. The browser simulator is only for public vectors and UI review; it uses the same C++ mnemonic implementation as the firmware. The WASM test checks both the published 50-roll SeedSigner vector and the 99-roll vector from this project's article.
