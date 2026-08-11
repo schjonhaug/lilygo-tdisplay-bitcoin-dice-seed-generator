@@ -22,6 +22,20 @@ assertMnemonic(
   "12345612345612345612345612345612345612345612345612",
   "unveil nice picture region tragic fault cream strike tourist control recipe tourist".split(" "),
 );
+
+module._session_press("1".charCodeAt(0));
+for (const roll of "12345612345612345612345612345612345612345612345612") module._session_press(roll.charCodeAt(0));
+if (module._session_roll_count() !== 50) throw new Error("Session did not record rolls");
+module._session_press("#".charCodeAt(0));
+if (module._session_screen() !== 2 || module._session_word_count() !== 12) throw new Error("Session did not generate words");
+module._session_press("#".charCodeAt(0));
+module._session_press("#".charCodeAt(0));
+module._session_press("#".charCodeAt(0));
+if (module._session_screen() !== 3) throw new Error("Session did not reach verification prompt");
+module._session_press("#".charCodeAt(0));
+if (module._session_screen() !== 4) throw new Error("Session did not start quiz");
+const choices = Array.from({length: 4}, (_, i) => module._session_quiz_choice_at(i));
+if (new Set(choices).size !== 4) throw new Error("Quiz choices are not unique");
 assertMnemonic(
   "133363436436436415622614221225242212144161454643266122155666664444633643543353132626522332412313253",
   "wrist tired novel fetch woman whisper jealous black average crawl task helmet negative wrong foster dry chronic ordinary chase typical recipe sunset draw victory".split(" "),

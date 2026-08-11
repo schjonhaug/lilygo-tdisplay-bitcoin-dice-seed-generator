@@ -90,4 +90,4 @@ node tests/test_wasm.mjs
 ./tools/serve-simulator.sh
 ```
 
-Open `http://localhost:8000`, click `Load public 99-roll article vector`, then press `#` to view the words. The browser simulator is only for public vectors and UI review; it uses the same C++ mnemonic implementation as the firmware. The WASM test checks both the published 50-roll SeedSigner vector and the 99-roll vector from this project's article.
+Open `http://localhost:8000`, click `Load public 99-roll article vector`, then press `#` to view the words. The browser simulator is only for public vectors and UI review; its input handling, session state, quiz, mnemonic generation, and word lookup are shared C++ compiled to WASM. The WASM test checks mnemonic vectors and shared-session transitions.
