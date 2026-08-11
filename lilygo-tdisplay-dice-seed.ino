@@ -10,6 +10,7 @@ constexpr byte kRows = 4;
 constexpr byte kColumns = 3;
 constexpr size_t kRollsPerLine = 25;
 constexpr size_t kRollLines = 4;
+constexpr int kRollCellWidth = 9;
 
 char keyMap[kRows][kColumns] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
 byte rowPins[kRows] = {21, 27, 26, 22};
@@ -52,31 +53,37 @@ void drawChooseLength() {
 }
 
 void drawRollEntry() {
-  char line[32];
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextDatum(TL_DATUM);
   tft.drawString(session.requiredRolls() == 50 ? "12 words" : "24 words", 5, 3, 2);
   tft.setTextDatum(TR_DATUM);
+  char line[20];
   snprintf(line, sizeof(line), "%u / %u rolls", static_cast<unsigned>(session.rollCount()), static_cast<unsigned>(session.requiredRolls()));
   tft.drawString(line, 235, 3, 2);
   tft.setTextDatum(TL_DATUM);
   tft.drawFastHLine(0, 21, 240, TFT_DARKGREY);
-  for (size_t row = 0; row < kRollLines; ++row) {
+  const size_t rollLines = session.requiredRolls() == 50 ? 2 : kRollLines;
+  for (size_t row = 0; row < rollLines; ++row) {
     const size_t offset = row * kRollsPerLine;
-    memset(line, '.', kRollsPerLine);
-    line[kRollsPerLine] = '\0';
-    tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
-    tft.drawString(line, 5, 26 + row * 21, 2);
-    const size_t entered = session.rollCount() > offset ? (session.rollCount() - offset < kRollsPerLine ? session.rollCount() - offset : kRollsPerLine) : 0;
-    if (entered) {
-      for (size_t i = 0; i < entered; ++i) line[i] = session.rollAt(offset + i);
-      line[entered] = '\0';
-      tft.setTextColor(TFT_WHITE, TFT_BLACK);
-      tft.drawString(line, 5, 26 + row * 21, 2);
+    const int y = 26 + row * 21;
+    for (size_t column = 0; column < kRollsPerLine; ++column) {
+      const size_t index = offset + column;
+      const int x = 5 + column * kRollCellWidth;
+      if (index < session.rollCount()) {
+        line[0] = session.rollAt(index);
+        line[1] = '\0';
+        tft.setTextColor(TFT_WHITE, TFT_BLACK);
+        tft.drawString(line, x, y, 2);
+      } else {
+        line[0] = '.';
+        line[1] = '\0';
+        tft.setTextColor(TFT_DARKGREY, TFT_BLACK);
+        tft.drawString(line, x + 3, y, 2);
+      }
     }
-    secureClear(line, sizeof(line));
   }
+  secureClear(line, sizeof(line));
   if (session.rollCount() == session.requiredRolls()) {
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
     drawFooter("*: undo", "#: generate");
