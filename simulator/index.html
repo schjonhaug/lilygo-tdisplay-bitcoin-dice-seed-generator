@@ -15,8 +15,10 @@
     #screen { aspect-ratio: 240 / 135; background: #050505; border: 2px solid #111; box-sizing: border-box; display: flex; flex-direction: column; padding: 14px 16px; font-size: clamp(11px, 2.8vw, 19px); white-space: pre-wrap; }
     #screen .title { border-bottom: 1px solid #555; font-weight: bold; margin-bottom: 8px; padding-bottom: 5px; }
     #screen .yellow { color: #f4d35e; } #screen .green { color: #64d98b; } #screen .dim { color: #a8abad; }
-    #screen .footer { margin-top: auto; }
-    #screen .rolls { font-size: 0.72em; letter-spacing: 0.04em; min-height: 2.5em; }
+    #screen .footer { display: flex; justify-content: space-between; margin-top: auto; }
+    #screen .rolls { font-size: 1.1em; letter-spacing: 0.04em; min-height: 2.5em; }
+    #screen .choice { font-size: 1.45em; line-height: 1.1; margin-top: 0.3em; }
+    #screen .choice-detail { margin-left: 0.5em; opacity: 0.75; }
     .keypad { background: #1e2226; display: grid; gap: 8px; grid-template-columns: repeat(3, 1fr); padding: 16px; }
     button { background: #4b535a; border: 0; border-radius: 7px; color: white; cursor: pointer; font: inherit; min-height: 44px; }
     button:hover { background: #69737a; } button:active { transform: translateY(1px); }
@@ -43,26 +45,26 @@
 
     function render() {
       if (state === "choose") {
-        screen.innerHTML = `<div class="title">Dice Seed Generator</div><div>Offline BIP39 English</div><br><div>1: 12 words / 50 rolls</div><div>2: 24 words / 99 rolls</div><br><div class="yellow">Only use private fair dice.</div>`;
+        screen.innerHTML = `<div class="title" style="font-size:1.55em">Dice Seed Generator</div><div class="choice">1: 12 words</div><div class="choice-detail">50 dice rolls</div><div class="choice">2: 24 words</div><div class="choice-detail">99 dice rolls</div>`;
       } else if (state === "entry") {
         const ready = rolls.length === required;
-        const enteredRolls = rolls.match(/.{1,33}/g)?.join("<br>") || "";
-        screen.innerHTML = `<div class="title">${required === 50 ? "12" : "24"} words: Dice rolls</div><div style="font-size:1.75em">${rolls.length} / ${required} rolls</div><div>1-6: enter</div><div class="rolls">${enteredRolls}</div><div class="footer ${ready ? "green" : "yellow"}">*: undo      #: ${ready ? "generate" : "main menu"}</div>`;
+        const enteredRolls = rolls.slice(-36).match(/.{1,18}/g)?.join("<br>") || "";
+        screen.innerHTML = `<div class="title">${required === 50 ? "12" : "24"} words: Dice rolls</div><div style="font-size:1.75em">${rolls.length} / ${required} rolls</div><div class="rolls">${enteredRolls}</div><div class="footer ${ready ? "green" : "yellow"}"><span>*: undo</span><span>#: ${ready ? "generate" : "main menu"}</span></div>`;
       } else if (state === "working") {
         screen.innerHTML = `<div class="title">Generating</div><br><div class="yellow">Calculating mnemonic...</div>`;
       } else if (state === "words") {
         const from = page * 4, shown = words.slice(from, from + 4);
         const lines = shown.map((word, i) => `${String(from + i + 1).padStart(2, " ")}. ${word}`).join("<br>");
         const last = from + 4 >= words.length;
-        screen.innerHTML = `<div class="title">Write words ${from + 1}-${Math.min(from + 4, words.length)}</div>${lines}<div class="yellow footer">${last ? "*: skip       #: verify" : "*: previous   #: next"}</div>`;
+        screen.innerHTML = `<div class="title">Write words ${from + 1}-${Math.min(from + 4, words.length)}</div>${lines}<div class="yellow footer"><span>${last ? "*: skip" : "*: previous"}</span><span>${last ? "#: verify" : "#: next"}</span></div>`;
       } else if (state === "verify") {
-        screen.innerHTML = `<div class="title">Verify backup?</div><div>Check every written word</div><div class="yellow footer">*: skip      #: start quiz</div>`;
+        screen.innerHTML = `<div class="title">Verify backup?</div><div>Check every written word</div><div class="yellow footer"><span>*: skip</span><span>#: start quiz</span></div>`;
       } else if (state === "quiz") {
         const question = quizOrder[quizPosition] + 1;
         const choices = quizChoices.map((index, i) => `${i + 1}. ${window.ENGLISH_WORDS[index]}`).join("<br>");
         screen.innerHTML = `<div class="title">Verify ${quizPosition + 1}/${words.length}</div><div>What is word ${question}?</div>${choices}<div class="yellow footer">${quizMessage || "*: skip verification"}</div>`;
       } else if (state === "skip-confirm") {
-        screen.innerHTML = `<div class="title">Skip verification?</div><div class="yellow">Your backup is untested.</div><div class="footer">*: resume    #: skip</div>`;
+        screen.innerHTML = `<div class="title">Skip verification?</div><div class="yellow">Your backup is untested.</div><div class="footer"><span>*: resume</span><span>#: skip</span></div>`;
       } else {
         screen.innerHTML = `<div class="title">${verified ? "Backup verified" : "Verification skipped"}</div><div class="yellow">Seed has been cleared.</div><div class="footer">#: clear and restart</div>`;
       }

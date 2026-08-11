@@ -10,7 +10,8 @@ constexpr byte kRows = 4;
 constexpr byte kColumns = 3;
 constexpr size_t kMaxRolls = 99;
 constexpr size_t kWordsPerPage = 4;
-constexpr size_t kRollsPerLine = 33;
+constexpr size_t kRollsPerLine = 18;
+constexpr size_t kVisibleRollLines = 2;
 
 char keyMap[kRows][kColumns] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
 byte rowPins[kRows] = {21, 27, 26, 22};
@@ -39,13 +40,24 @@ void header(const char* title) {
   tft.drawFastHLine(0, 23, 240, TFT_DARKGREY);
 }
 
+void drawFooter(const char* left, const char* right, uint16_t y = 113) {
+  tft.setTextDatum(TL_DATUM);
+  if (left) tft.drawString(left, 5, y, 2);
+  tft.setTextDatum(TR_DATUM);
+  if (right) tft.drawString(right, 235, y, 2);
+  tft.setTextDatum(TL_DATUM);
+}
+
 void drawChooseLength() {
-  header("Dice Seed Generator");
-  tft.drawString("Offline BIP39 English", 5, 32, 2);
-  tft.drawString("1: 12 words / 50 rolls", 5, 58, 2);
-  tft.drawString("2: 24 words / 99 rolls", 5, 82, 2);
-  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawString("Only use private fair dice.", 5, 112, 2);
+  tft.fillScreen(TFT_BLACK);
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextDatum(TL_DATUM);
+  tft.drawString("Dice Seed Generator", 5, 5, 4);
+  tft.drawFastHLine(0, 39, 240, TFT_DARKGREY);
+  tft.drawString("1: 12 words", 17, 49, 4);
+  tft.drawString("50 dice rolls", 22, 77, 2);
+  tft.drawString("2: 24 words", 17, 91, 4);
+  tft.drawString("99 dice rolls", 22, 119, 2);
 }
 
 void drawRollEntry() {
@@ -53,20 +65,20 @@ void drawRollEntry() {
   header(requiredRolls == 50 ? "12 words: Dice rolls" : "24 words: Dice rolls");
   snprintf(line, sizeof(line), "%u / %u rolls", static_cast<unsigned>(rollCount), static_cast<unsigned>(requiredRolls));
   tft.drawString(line, 5, 31, 4);
-  tft.drawString("1-6: enter", 5, 60, 1);
-  for (size_t offset = 0, row = 0; offset < rollCount; offset += kRollsPerLine, ++row) {
+  const size_t firstVisibleRoll = rollCount > kRollsPerLine * kVisibleRollLines ? rollCount - kRollsPerLine * kVisibleRollLines : 0;
+  for (size_t offset = firstVisibleRoll, row = 0; offset < rollCount; offset += kRollsPerLine, ++row) {
     const size_t length = rollCount - offset < kRollsPerLine ? rollCount - offset : kRollsPerLine;
     memcpy(line, rolls + offset, length);
     line[length] = '\0';
-    tft.drawString(line, 5, 70 + row * 10, 1);
+    tft.drawString(line, 5, 66 + row * 21, 2);
     secureClear(line, sizeof(line));
   }
   if (rollCount == requiredRolls) {
     tft.setTextColor(TFT_GREEN, TFT_BLACK);
-    tft.drawString("*: undo      #: generate", 5, 113, 2);
+    drawFooter("*: undo", "#: generate");
   } else {
     tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-    tft.drawString("*: undo      #: main menu", 5, 113, 2);
+    drawFooter("*: undo", "#: main menu");
   }
 }
 
@@ -87,9 +99,9 @@ void drawWords() {
   }
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   if ((page + 1) * kWordsPerPage < wordCount) {
-    tft.drawString("*: previous   #: next", 5, 113, 2);
+    drawFooter("*: previous", "#: next");
   } else {
-    tft.drawString("*: skip       #: verify", 5, 113, 2);
+    drawFooter("*: skip", "#: verify");
   }
 }
 
@@ -97,7 +109,7 @@ void drawVerifyPrompt() {
   header("Verify backup?");
   tft.drawString("Check every written word", 5, 42, 2);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawString("*: skip      #: start quiz", 5, 113, 2);
+  drawFooter("*: skip", "#: start quiz");
 }
 
 uint32_t nextQuizValue() {
@@ -170,7 +182,7 @@ void drawSkipQuizConfirmation() {
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   tft.drawString("Your backup is untested.", 5, 43, 2);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.drawString("*: resume    #: skip", 5, 114, 2);
+  drawFooter("*: resume", "#: skip", 114);
 }
 
 void drawClearWords(bool verified) {
@@ -178,7 +190,7 @@ void drawClearWords(bool verified) {
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   tft.drawString("Seed has been cleared.", 5, 42, 2);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.drawString("#: clear and restart", 5, 114, 2);
+  drawFooter(nullptr, "#: clear and restart", 114);
 }
 
 void clearSession() {
