@@ -79,7 +79,8 @@
       } else if (state === "quiz") {
         const question = quizOrder[quizPosition] + 1;
         const choices = quizChoices.map((index, i) => `${i + 1}. ${wordFromIndex(index)}`).join("<br>");
-        screen.innerHTML = `<div class="title">Verify ${quizPosition + 1}/${words.length}</div><div>What is word ${question}?</div>${choices}<div class="yellow footer">${quizMessage || "*: skip verification"}</div>`;
+        const quizFooter = quizMessage ? `<span style="color:#ff6b6b">${quizMessage}</span><span>*: skip</span>` : "*: skip verification";
+        screen.innerHTML = `<div class="title">Verify ${quizPosition + 1}/${words.length}</div><div>What is word ${question}?</div>${choices}<div class="yellow footer">${quizFooter}</div>`;
       } else if (state === "skip-confirm") {
         screen.innerHTML = `<div class="title">Skip verification?</div><div class="yellow">Your backup is untested.</div><div class="footer"><span>*: resume</span><span>#: skip</span></div>`;
       } else {

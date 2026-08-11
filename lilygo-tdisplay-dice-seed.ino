@@ -32,6 +32,7 @@ size_t quizOrder[24];
 uint16_t quizChoices[4];
 size_t quizPosition = 0;
 uint32_t quizRandomState = 0;
+bool quizIncorrect = false;
 
 void header(const char* title) {
   tft.fillScreen(TFT_BLACK);
@@ -135,6 +136,7 @@ void prepareQuiz() {
     quizOrder[swapWith] = temporary;
   }
   quizPosition = 0;
+  quizIncorrect = false;
 }
 
 void prepareQuizChoices() {
@@ -175,7 +177,14 @@ void drawQuiz() {
     secureClear(word, sizeof(word));
   }
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawString("*: skip verification", 5, 114, 2);
+  if (quizIncorrect) {
+    tft.setTextColor(TFT_RED, TFT_BLACK);
+    tft.drawString("Incorrect. Try again.", 5, 114, 1);
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    drawFooter(nullptr, "*: skip", 112);
+  } else {
+    tft.drawString("*: skip verification", 5, 114, 2);
+  }
 }
 
 void drawSkipQuizConfirmation() {
@@ -203,6 +212,7 @@ void clearSession() {
   page = 0;
   quizPosition = 0;
   quizRandomState = 0;
+  quizIncorrect = false;
   secureClear(quizOrder, sizeof(quizOrder));
   secureClear(quizChoices, sizeof(quizChoices));
 }
@@ -295,9 +305,13 @@ void loop() {
           if (quizPosition == wordCount) {
             finishSeedDisplay(true);
           } else {
+            quizIncorrect = false;
             prepareQuizChoices();
             drawQuiz();
           }
+        } else {
+          quizIncorrect = true;
+          drawQuiz();
         }
       } else if (key == '*') {
         skipReturnScreen = Screen::Quiz;
