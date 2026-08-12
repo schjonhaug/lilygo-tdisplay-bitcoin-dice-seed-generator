@@ -65,7 +65,10 @@
         let enteredRolls = "";
         for (let i = 0; i < count; i++) enteredRolls += String.fromCharCode(wasm._session_roll_at(i));
         const rollLines = required === 50 ? 2 : 4;
-        const rollGrid = Array.from({length: rollLines}, (_, row) => enteredRolls.slice(row * 25, row * 25 + 25).padEnd(25, ".")).join("<br>");
+        const rollGrid = Array.from({length: rollLines}, (_, row) => {
+          const rowLength = Math.min(25, required - row * 25);
+          return enteredRolls.slice(row * 25, row * 25 + rowLength).padEnd(rowLength, ".");
+        }).join("<br>");
         screen.innerHTML = `<div class="title"><span>${required === 50 ? "12" : "24"} words</span><span style="float:right">${count} / ${required}</span></div><div class="rolls">${rollGrid}</div><div class="footer ${count === required ? "green" : "yellow"}"><span>*: undo</span><span>#: ${count === required ? "generate" : "main menu"}</span></div>`;
       } else if (wasm._session_screen() === 2) {
         const page = wasm._session_page(), count = wasm._session_word_count(), from = page * 4;

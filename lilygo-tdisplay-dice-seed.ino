@@ -66,8 +66,9 @@ void drawRollEntry() {
   const size_t rollLines = session.requiredRolls() == 50 ? 2 : kRollLines;
   for (size_t row = 0; row < rollLines; ++row) {
     const size_t offset = row * kRollsPerLine;
+    const size_t columns = session.requiredRolls() - offset < kRollsPerLine ? session.requiredRolls() - offset : kRollsPerLine;
     const int y = 26 + row * 21;
-    for (size_t column = 0; column < kRollsPerLine; ++column) {
+    for (size_t column = 0; column < columns; ++column) {
       const size_t index = offset + column;
       const int x = 5 + column * kRollCellWidth;
       if (index < session.rollCount()) {
