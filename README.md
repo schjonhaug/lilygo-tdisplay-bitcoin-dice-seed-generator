@@ -15,6 +15,21 @@ The firmware uses the same deterministic dice construction as [SeedSigner](https
 
 It does not use the [ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/) RNG, convert dice to base 6, store seed material, enable networking, or log seed material to serial output.
 
+## Screens
+
+Screens below are rendered from the local WebAssembly simulator using the public 99-roll test vector from this project's article.
+
+<p align="center">
+  <img src="assets/screenshots/start.png" alt="Select 12 or 24 words" width="240">
+  <img src="assets/screenshots/rolls.png" alt="Completed 99-roll entry grid" width="240">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/words.png" alt="Mnemonic word review" width="240">
+  <img src="assets/screenshots/verify.png" alt="Backup verification prompt" width="240">
+  <img src="assets/screenshots/quiz.png" alt="Mnemonic word verification quiz" width="240">
+</p>
+
 ## Hardware
 
 - [LilyGO TTGO T-Display](https://lilygo.cc/products/t-display) ESP32 with ST7789 display.
@@ -91,3 +106,9 @@ node tests/test_wasm.mjs
 ```
 
 Open `http://localhost:8000`, click `Load public 99-roll article vector`, then press `#` to view the words. The browser simulator is only for public vectors and UI review; its input handling, session state, quiz, mnemonic generation, and word lookup are shared C++ compiled to WASM. The WASM test checks mnemonic vectors and shared-session transitions.
+
+To regenerate the README screenshots:
+
+```sh
+./tools/capture-screenshots.sh
+```

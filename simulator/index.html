@@ -27,6 +27,11 @@
     button:hover { background: #69737a; } button:active { transform: translateY(1px); }
     .actions { display: flex; gap: 8px; margin: 16px 0; } .actions button { padding: 0 14px; }
     code { color: #f4d35e; } @media (max-width: 480px) { body { padding: 12px; } }
+    body.capture { padding: 0; }
+    body.capture main { margin: 0; width: 240px; }
+    body.capture h1, body.capture p, body.capture .actions, body.capture .keypad { display: none; }
+    body.capture .device { border: 0; border-radius: 0; box-shadow: none; }
+    body.capture #screen { border: 0; }
   </style>
 </head>
 <body>
@@ -40,12 +45,15 @@
   <script type="module">
     import createMnemonicModule from "./mnemonic_wasm.js";
 
+    if (new URLSearchParams(window.location.search).has("capture")) document.body.classList.add("capture");
+
     const publicArticleRolls = "133363436436436415622614221225242212144161454643266122155666664444633643543353132626522332412313253";
     const screen = document.querySelector("#screen"), keypad = document.querySelector("#keypad");
     let status = "loading", wasm;
     const wasmReady = createMnemonicModule().then((module) => {
       wasm = module;
       status = "ready";
+      loadScreenshotState();
       render();
     }).catch(() => {
       status = "error";
@@ -100,6 +108,21 @@
       if (status !== "ready") return;
       wasm._session_press(key.charCodeAt(0));
       render();
+    }
+
+    function loadScreenshotState() {
+      const state = new URLSearchParams(window.location.search).get("screenshot");
+      if (!state) return;
+      wasm._session_reset();
+      if (state === "start") return;
+      wasm._session_press("2".charCodeAt(0));
+      for (const roll of publicArticleRolls) wasm._session_press(roll.charCodeAt(0));
+      if (state === "rolls") return;
+      wasm._session_press("#".charCodeAt(0));
+      if (state === "words") return;
+      for (let i = 0; i < 6; ++i) wasm._session_press("#".charCodeAt(0));
+      if (state === "verify") return;
+      wasm._session_press("#".charCodeAt(0));
     }
 
     keys.forEach((key) => { const button = document.createElement("button"); button.textContent = key; button.onclick = () => press(key); keypad.append(button); });
