@@ -11,9 +11,9 @@
     h1 { font-size: 1.25rem; margin: 0 0 8px; }
     p { color: #bdc4c8; line-height: 1.45; }
     .warning { border-left: 3px solid #f4d35e; padding-left: 12px; }
-    .device { background: #30353a; border: 12px solid #30353a; border-radius: 18px; box-shadow: 0 16px 44px #0008; }
-    #screen { aspect-ratio: 240 / 135; background: #050505; border: 2px solid #111; box-sizing: border-box; display: flex; flex-direction: column; padding: 14px 16px; font-size: clamp(11px, 2.8vw, 19px); white-space: pre-wrap; }
-    #screen .title { border-bottom: 1px solid #555; font-weight: bold; margin-bottom: 8px; padding-bottom: 5px; }
+    .device { background: #30353a; border: 12px solid #30353a; border-radius: 18px; box-shadow: 0 16px 44px #0008; width: 240px; }
+    #screen { background: #050505; border: 2px solid #111; box-sizing: border-box; display: flex; flex-direction: column; font-size: 10px; height: 135px; overflow: hidden; padding: 5px; white-space: pre-wrap; width: 240px; }
+    #screen .title { border-bottom: 1px solid #555; font-weight: bold; margin-bottom: 5px; padding-bottom: 3px; }
     #screen .yellow { color: #f4d35e; } #screen .green { color: #64d98b; } #screen .dim { color: #a8abad; }
     #screen .footer { display: flex; justify-content: space-between; margin-top: auto; }
     #screen .rolls { font-size: 1.1em; letter-spacing: 0.04em; min-height: 2.5em; }
@@ -22,11 +22,11 @@
     #screen .choice-green { color: #64d98b; }
     #screen .choice-amber { color: #f4d35e; }
     #screen .title-cyan { color: #71d8e9; }
-    .keypad { background: #1e2226; display: grid; gap: 8px; grid-template-columns: repeat(3, 1fr); padding: 16px; }
+    .keypad { background: #1e2226; display: grid; gap: 8px; grid-template-columns: repeat(3, 1fr); padding: 12px; }
     button { background: #4b535a; border: 0; border-radius: 7px; color: white; cursor: pointer; font: inherit; min-height: 44px; }
     button:hover { background: #69737a; } button:active { transform: translateY(1px); }
     .actions { display: flex; gap: 8px; margin: 16px 0; } .actions button { padding: 0 14px; }
-    code { color: #f4d35e; } @media (max-width: 480px) { body { padding: 12px; } #screen { padding: 9px 11px; } }
+    code { color: #f4d35e; } @media (max-width: 480px) { body { padding: 12px; } }
   </style>
 </head>
 <body>
