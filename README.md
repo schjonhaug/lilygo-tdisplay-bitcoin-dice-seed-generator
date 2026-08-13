@@ -80,6 +80,20 @@ arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build --port <port
 
 Install [Arduino CLI](https://arduino.github.io/arduino-cli/latest/installation/) before building. Use the port reported by `arduino-cli board list`; on macOS it is commonly `/dev/cu.usbserial-XXXX`.
 
+### Connected Device Test
+
+Build the development-only serial test firmware, flash it, and run the harness with the connected device port:
+
+```sh
+./build.sh --device-test
+arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build --port <port> --upload-property upload.speed=115200
+./tools/test-device.sh <port>
+```
+
+The harness injects public 50- and 99-roll vectors, asserts real-device state transitions through roll entry, each mnemonic review page, rejected and successful quiz choices, skipped verification, and verified completion, and saves RGB565 framebuffer captures as PNG files in `device-screenshots/`. Each capture is pixel-identical to the frame sent to the ST7789; it is not an optical capture of panel brightness or color variation.
+
+`--device-test` enables serial keypad injection and state telemetry, including quiz answers. It must never be used with private dice rolls or released as production firmware. A normal `./build.sh` does not include this interface.
+
 ## Verification
 
 The test suite checks these public compatibility vectors:

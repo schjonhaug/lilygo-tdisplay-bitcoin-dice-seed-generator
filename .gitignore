@@ -2,3 +2,5 @@
 /build-test-mnemonic
 /build-test-sanitized
 /build-dice-seed-cli
+/build-test-device
+/device-screenshots/
