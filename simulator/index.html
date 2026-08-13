@@ -130,7 +130,7 @@
 
     keys.forEach((key) => { const button = document.createElement("button"); button.textContent = key; button.onclick = () => press(key); keypad.append(button); });
     document.addEventListener("keydown", (event) => { if (keys.includes(event.key)) { event.preventDefault(); press(event.key); } });
-    document.querySelector("#article-vector").onclick = () => { if (status === "ready") { wasm._session_reset(); wasm._session_press(50); for (const roll of publicArticleRolls) wasm._session_press(roll.charCodeAt(0)); render(); } };
+    document.querySelector("#article-vector").onclick = () => { if (status === "ready") { wasm._session_reset(); wasm._session_press("2".charCodeAt(0)); wasm._session_press("#".charCodeAt(0)); for (const roll of publicArticleRolls) wasm._session_press(roll.charCodeAt(0)); render(); } };
     document.querySelector("#reset").onclick = () => { if (status === "ready") { wasm._session_reset(); render(); } };
     render();
   </script>

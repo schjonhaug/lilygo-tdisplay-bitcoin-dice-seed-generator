@@ -54,5 +54,8 @@ int main() {
   size_t count = 0;
   assert(!generateMnemonicIndexes("123456", 6, indexes, count));
   assert(!generateMnemonicIndexes("11111111111111111111111111111111111111111111111110", 50, indexes, count));
+  char invalidWord[12] = "not-empty";
+  wordAt(2048, invalidWord, sizeof(invalidWord));
+  assert(invalidWord[0] == '\0');
   return 0;
 }

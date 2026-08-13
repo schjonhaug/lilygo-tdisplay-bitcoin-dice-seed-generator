@@ -168,6 +168,11 @@ inline bool generateMnemonicIndexes(const char* rolls, size_t rollCount, uint16_
 }
 
 inline void wordAt(uint16_t index, char* output, size_t outputSize) {
+  if (!outputSize) return;
+  if (index >= 2048) {
+    output[0] = '\0';
+    return;
+  }
   const char* word = kEnglishWords;
   while (index--) {
     while (*word++) {}

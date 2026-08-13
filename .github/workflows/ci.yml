@@ -22,3 +22,5 @@ jobs:
       - uses: arduino/setup-arduino-cli@v2
       - name: Build ESP32 firmware
         run: ./build.sh
+      - name: Build ESP32 device-test firmware
+        run: ./build.sh --device-test

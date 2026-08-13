@@ -1,4 +1,5 @@
 /build/
+/build-device-test/
 /build-test-mnemonic
 /build-test-sanitized
 /build-dice-seed-cli

@@ -86,7 +86,7 @@ Build the development-only serial test firmware, flash it, and run the harness w
 
 ```sh
 ./build.sh --device-test
-arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build --port <port> --upload-property upload.speed=115200
+arduino-cli upload --fqbn esp32:esp32:ttgo-lora32 --input-dir build-device-test --port <port> --upload-property upload.speed=115200
 ./tools/test-device.sh <port>
 ```
 
