@@ -63,7 +63,7 @@ Each mnemonic word is shown individually in a large font. `*` shows the previous
 
 **Verify backup**
 
-Each of the 12 or 24 words is tested in shuffled order. Select one of four choices with `1` through `4`. `*` opens the skip confirmation; there, `*` resumes verification and `#` skips it. After completion or a confirmed skip, `#` clears sensitive memory and returns to the main menu.
+Each of the 12 or 24 words is tested in shuffled order. Select one of three choices with `1` through `3`. `#` opens the skip confirmation; there, `*` resumes verification and `#` skips it. After completion or a confirmed skip, `#` clears sensitive memory and returns to the main menu.
 
 ## Build
 
@@ -86,6 +86,7 @@ The test suite checks these public compatibility vectors:
 
 - Three 50-roll SeedSigner vectors: a mixed sequence, all `1`s, and all `6`s.
 - Three known 99-roll SeedSigner vectors.
+- A 99-roll all-`1` vector published by [Krux](https://github.com/selfcustody/krux/blob/main/tests/pages/new_mnemonic/test_dice_rolls.py).
 - The public 99-roll test sequence and mnemonic from [Why Dice-Only Coldcard Seeds Were Unaffected by the RNG Bug](https://schjonhaug.dev/articles/why-dice-only-coldcard-seeds-were-unaffected-by-the-rng-bug/), independently checked on SeedSigner and Coldcard.
 
 For an independent check, run SeedSigner locally or use an offline copy of [Ian Coleman's BIP39 tool](https://github.com/iancoleman/bip39) with entropy interpreted as `Base 10 [0-9]` or `Hex [0-9A-F]`, not `Dice [1-6]`.

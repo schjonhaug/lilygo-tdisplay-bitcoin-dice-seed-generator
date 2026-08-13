@@ -48,18 +48,18 @@ int main() {
 
   const uint16_t answer = session.wordIndexAt(session.quizWordNumber() - 1);
   size_t answerChoices = 0;
-  for (size_t i = 0; i < 4; ++i) answerChoices += session.quizChoiceAt(i) == answer;
+  for (size_t i = 0; i < 3; ++i) answerChoices += session.quizChoiceAt(i) == answer;
   assert(answerChoices == 1);
   session.press('9');
   assert(!session.quizIncorrect());
-  for (size_t i = 0; i < 4; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     if (session.quizChoiceAt(i) != answer) {
       session.press(static_cast<char>('1' + i));
       break;
     }
   }
   assert(session.quizIncorrect());
-  session.press('*');
+  session.press('#');
   session.press('#');
   assert(session.screen() == SessionScreen::ClearWords && !session.verified());
   session.press('#');
@@ -72,7 +72,7 @@ int main() {
   session.press('#');
   for (size_t question = 0; question < 12; ++question) {
     const uint16_t correct = session.wordIndexAt(session.quizWordNumber() - 1);
-    for (size_t i = 0; i < 4; ++i) {
+    for (size_t i = 0; i < 3; ++i) {
       if (session.quizChoiceAt(i) == correct) {
         session.press(static_cast<char>('1' + i));
         break;

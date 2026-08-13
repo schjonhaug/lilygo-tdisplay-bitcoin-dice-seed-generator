@@ -135,21 +135,15 @@ void drawQuiz() {
   header(title);
   snprintf(line, sizeof(line), "What is word %u?", static_cast<unsigned>(wordNumber));
   tft.drawString(line, 5, 27, 2);
-  for (size_t i = 0; i < 4; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     wordAt(session.quizChoiceAt(i), word, sizeof(word));
     snprintf(line, sizeof(line), "%u. %s", static_cast<unsigned>(i + 1), word);
+    tft.setTextColor(session.quizIncorrect() && i == session.quizIncorrectChoice() ? TFT_RED : TFT_WHITE, TFT_BLACK);
     tft.drawString(line, 8, 45 + i * 20, 2);
     secureClear(word, sizeof(word));
   }
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  if (session.quizIncorrect()) {
-    tft.setTextColor(TFT_RED, TFT_BLACK);
-    tft.drawString("Incorrect. Try again.", 5, 114, 1);
-    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-    drawFooter(nullptr, "*: skip", 112);
-  } else {
-    tft.drawString("*: skip verification", 5, 114, 2);
-  }
+  drawFooter(nullptr, "#: skip verification", 114);
   secureClear(line, sizeof(line));
   secureClear(word, sizeof(word));
 }

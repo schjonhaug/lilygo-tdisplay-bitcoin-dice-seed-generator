@@ -87,10 +87,9 @@
       } else if (wasm._session_screen() === 4) {
         screen.innerHTML = `<div class="title">Verify backup?</div><div>Check every written word</div><div class="yellow footer"><span>*: skip</span><span>#: start quiz</span></div>`;
       } else if (wasm._session_screen() === 5) {
-        const choices = Array.from({length: 4}, (_, i) => `${i + 1}. ${wordFromIndex(wasm._session_quiz_choice_at(i))}`).join("<br>");
-        const incorrect = wasm._session_quiz_incorrect();
-        const quizFooter = incorrect ? `<span style="color:#ff6b6b">Incorrect. Try again.</span><span>*: skip</span>` : "*: skip verification";
-        screen.innerHTML = `<div class="title">Verify ${wasm._session_quiz_position() + 1}/${wasm._session_word_count()}</div><div>What is word ${wasm._session_quiz_word_number()}?</div>${choices}<div class="yellow footer">${quizFooter}</div>`;
+        const incorrectChoice = wasm._session_quiz_incorrect_choice();
+        const choices = Array.from({length: 3}, (_, i) => `<span style="color:${i === incorrectChoice ? "#ff6b6b" : "#e7e7e7"}">${i + 1}. ${wordFromIndex(wasm._session_quiz_choice_at(i))}${i === incorrectChoice ? "  incorrect" : ""}</span>`).join("<br>");
+        screen.innerHTML = `<div class="title">Verify ${wasm._session_quiz_position() + 1}/${wasm._session_word_count()}</div><div>What is word ${wasm._session_quiz_word_number()}?</div>${choices}<div class="yellow footer">#: skip verification</div>`;
       } else if (wasm._session_screen() === 6) {
         screen.innerHTML = `<div class="title">Skip verification?</div><div class="yellow">Your backup is untested.</div><div class="footer"><span>*: resume</span><span>#: skip</span></div>`;
       } else {

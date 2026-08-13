@@ -34,5 +34,6 @@ int session_quiz_position() { return static_cast<int>(session.quizPosition()); }
 int session_quiz_word_number() { return static_cast<int>(session.quizWordNumber()); }
 int session_quiz_choice_at(int index) { return index >= 0 ? session.quizChoiceAt(static_cast<size_t>(index)) : 0; }
 int session_quiz_incorrect() { return session.quizIncorrect(); }
+int session_quiz_incorrect_choice() { return static_cast<int>(session.quizIncorrectChoice()); }
 int session_verified() { return session.verified(); }
 }

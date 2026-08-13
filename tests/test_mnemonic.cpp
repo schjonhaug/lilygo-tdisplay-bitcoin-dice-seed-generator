@@ -42,6 +42,14 @@ int main() {
   const char* expected24KnownThree[] = {"lizard", "broken", "love", "tired", "depend", "eyebrow", "excess", "lonely", "advance", "father", "various", "cram", "ignore", "panic", "feed", "plunge", "miss", "regret", "boring", "unique", "galaxy", "fan", "detail", "fly"};
   assertMnemonic("222222222222222222222222222222222222222222222555555555555555555555555555555555555555555555555555556", expected24KnownThree, 24);
 
+  // Krux test_dice_rolls.py: 99 D6 rolls, all face 1.
+  const char* expected24Krux[] = {"wheel", "erase", "puppy", "pistol", "chapter", "accuse", "carpet", "drop", "quote", "final", "attend", "near", "scrap", "satisfy", "limit", "style", "crunch", "person", "south", "inspire", "lunch", "meadow", "enact", "tattoo"};
+  char ninetyNineOnes[100];
+  memset(ninetyNineOnes, '1', 99);
+  ninetyNineOnes[99] = '\0';
+  assertMnemonic(ninetyNineOnes, expected24Krux, 24);
+  secureClear(ninetyNineOnes, sizeof(ninetyNineOnes));
+
   uint16_t indexes[24] = {};
   size_t count = 0;
   assert(!generateMnemonicIndexes("123456", 6, indexes, count));

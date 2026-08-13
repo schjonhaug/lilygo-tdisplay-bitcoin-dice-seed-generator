@@ -63,17 +63,19 @@ class Session {
         }
         break;
       case SessionScreen::Quiz:
-        if (key >= '1' && key <= '4') {
+        if (key >= '1' && key <= '3') {
           if (quizChoices_[key - '1'] == wordIndexes_[quizOrder_[quizPosition_]]) {
             if (++quizPosition_ == wordCount_) finish(true);
             else {
               quizIncorrect_ = false;
+              quizIncorrectChoice_ = 3;
               prepareQuizChoices();
             }
           } else {
             quizIncorrect_ = true;
+            quizIncorrectChoice_ = static_cast<size_t>(key - '1');
           }
-        } else if (key == '*') {
+        } else if (key == '#') {
           skipReturnScreen_ = SessionScreen::Quiz;
           screen_ = SessionScreen::ConfirmSkipQuiz;
         }
@@ -98,8 +100,9 @@ class Session {
   size_t page() const { return page_; }
   size_t quizPosition() const { return quizPosition_; }
   size_t quizWordNumber() const { return quizPosition_ < wordCount_ ? quizOrder_[quizPosition_] + 1 : 0; }
-  uint16_t quizChoiceAt(size_t index) const { return index < 4 ? quizChoices_[index] : 0; }
+  uint16_t quizChoiceAt(size_t index) const { return index < 3 ? quizChoices_[index] : 0; }
   bool quizIncorrect() const { return quizIncorrect_; }
+  size_t quizIncorrectChoice() const { return quizIncorrectChoice_; }
   bool verified() const { return verified_; }
 
  private:
@@ -126,11 +129,12 @@ class Session {
     }
     quizPosition_ = 0;
     quizIncorrect_ = false;
+    quizIncorrectChoice_ = 3;
   }
 
   void prepareQuizChoices() {
     quizChoices_[0] = wordIndexes_[quizOrder_[quizPosition_]];
-    for (size_t choice = 1; choice < 4; ++choice) {
+    for (size_t choice = 1; choice < 3; ++choice) {
       uint16_t candidate;
       bool duplicate;
       do {
@@ -142,7 +146,7 @@ class Session {
       } while (duplicate);
       quizChoices_[choice] = candidate;
     }
-    for (size_t i = 3; i > 0; --i) {
+    for (size_t i = 2; i > 0; --i) {
       const size_t swapWith = nextQuizValue() % (i + 1);
       const uint16_t temporary = quizChoices_[i];
       quizChoices_[i] = quizChoices_[swapWith];
@@ -172,6 +176,7 @@ class Session {
     rollCount_ = requiredRolls_ = wordCount_ = page_ = quizPosition_ = 0;
     quizRandomState_ = 0;
     quizIncorrect_ = verified_ = false;
+    quizIncorrectChoice_ = 3;
   }
 
   SessionScreen screen_;
@@ -181,8 +186,9 @@ class Session {
   uint16_t wordIndexes_[24];
   size_t wordCount_, page_;
   size_t quizOrder_[24];
-  uint16_t quizChoices_[4];
+  uint16_t quizChoices_[3];
   size_t quizPosition_;
   uint32_t quizRandomState_;
   bool quizIncorrect_, verified_;
+  size_t quizIncorrectChoice_;
 };
