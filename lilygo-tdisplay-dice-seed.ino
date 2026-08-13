@@ -80,7 +80,7 @@ void drawChooseLength() {
   canvas.setTextColor(TFT_GREEN, TFT_BLACK);
   canvas.drawString("1: 12 words", 5, 43, 4);
   canvas.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
-  canvas.drawString("50 dice rolls", 5, 70, 2);
+  canvas.drawString("50 dice rolls", 5, 66, 2);
   canvas.setTextColor(TFT_YELLOW, TFT_BLACK);
   canvas.drawString("2: 24 words", 5, 87, 4);
   canvas.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
