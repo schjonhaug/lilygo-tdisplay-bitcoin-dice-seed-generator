@@ -19,6 +19,7 @@ Keypad keypad = Keypad(makeKeymap(keyMap), rowPins, columnPins, kRows, kColumns)
 TFT_eSPI tft;
 
 Session session;
+constexpr const char* kFirmwareVersion = "v0.1.0";
 
 void header(const char* title) {
   tft.fillScreen(TFT_BLACK);
@@ -50,6 +51,19 @@ void drawChooseLength() {
   tft.drawString("2: 24 words", 17, 92, 4);
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
   tft.drawString("99 dice rolls", 22, 120, 1);
+  tft.setTextDatum(TR_DATUM);
+  tft.drawString(kFirmwareVersion, 235, 122, 1);
+  tft.setTextDatum(TL_DATUM);
+}
+
+void drawPreflightWarning() {
+  header("Before you roll");
+  tft.drawString("Use fair, private dice.", 5, 31, 2);
+  tft.drawString("Power loss clears this", 5, 51, 2);
+  tft.drawString("session. Keep roll notes", 5, 71, 2);
+  tft.drawString("until backup is verified.", 5, 91, 2);
+  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+  drawFooter("*: cancel", "#: continue");
 }
 
 void drawRollEntry() {
@@ -108,6 +122,7 @@ void drawWords() {
     snprintf(numbered, sizeof(numbered), "%2u. %s", static_cast<unsigned>(index + 1), word);
     tft.drawString(numbered, 8, 31 + i * 20, 2);
     secureClear(word, sizeof(word));
+    secureClear(numbered, sizeof(numbered));
   }
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   drawFooter("*: previous", "#: next");
@@ -144,6 +159,8 @@ void drawQuiz() {
   } else {
     tft.drawString("*: skip verification", 5, 114, 2);
   }
+  secureClear(line, sizeof(line));
+  secureClear(word, sizeof(word));
 }
 
 void drawSkipQuizConfirmation() {
@@ -165,6 +182,7 @@ void drawClearWords() {
 void drawCurrentScreen() {
   switch (session.screen()) {
     case SessionScreen::ChooseLength: drawChooseLength(); break;
+    case SessionScreen::PreflightWarning: drawPreflightWarning(); break;
     case SessionScreen::EnterRolls: drawRollEntry(); break;
     case SessionScreen::ShowWords: drawWords(); break;
     case SessionScreen::VerifyPrompt: drawVerifyPrompt(); break;

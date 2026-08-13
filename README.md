@@ -15,6 +15,16 @@ The firmware uses the same deterministic dice construction as [SeedSigner](https
 
 It does not use the [ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/) RNG, convert dice to base 6, store seed material, enable networking, or log seed material to serial output.
 
+## Security Model
+
+This is a dedicated, offline dice-to-BIP39 generator, not a tamper-resistant hardware wallet or secure element.
+
+- Build and flash it from a trusted host, then disconnect USB before entering real rolls.
+- Use fair, private dice. Keep the roll record private and do not photograph, share, or reuse it.
+- Power loss, reset, and cancellation clear the in-progress session. Keep private roll notes until the written mnemonic has passed verification, then destroy them.
+- The ESP32 and its USB flashing path cannot protect against compromised firmware, a compromised build host, or physical access to the device.
+- A BIP39 mnemonic is not a complete wallet backup. Separately record the wallet software/type, derivation path or account, and any BIP39 passphrase. Never store these on this device.
+
 ## Screens
 
 Screens below are rendered from the local WebAssembly simulator using the public 99-roll test vector from this project's article.
@@ -41,15 +51,15 @@ Screens below are rendered from the local WebAssembly simulator using the public
 
 **Select length**
 
-`1` selects a 12-word mnemonic with 50 rolls. `2` selects a 24-word mnemonic with 99 rolls.
+`1` selects a 12-word mnemonic with 50 rolls. `2` selects a 24-word mnemonic with 99 rolls. The next screen requires acknowledgement that the dice must be fair and private and that a reset clears the session.
 
 **Enter dice rolls**
 
-`1` through `6` enter die faces. `*` removes the latest roll. Before the required count, `#` cancels to the main menu. At exactly 50 or 99 rolls, `#` generates the mnemonic immediately.
+`1` through `6` enter die faces. `*` removes the latest roll. Before the required count, `#` cancels to the main menu. At exactly 50 or 99 rolls, `#` generates the mnemonic immediately. Fifty fair d6 rolls provide about 129 bits of input entropy; 99 provide about 256 bits.
 
 **Review mnemonic**
 
-`*` shows the previous word page and `#` shows the next page. On the final page, `*` skips backup verification and `#` starts it.
+`*` shows the previous word page and `#` shows the next page. On the first word page, `*` returns to the completed roll grid. After the final page, `#` opens the backup-verification prompt.
 
 **Verify backup**
 

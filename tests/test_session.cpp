@@ -5,6 +5,7 @@
 
 void enter(Session& session, const char* rolls) {
   session.press(strlen(rolls) == 50 ? '1' : '2');
+  session.press('#');
   for (const char* roll = rolls; *roll; ++roll) session.press(*roll);
 }
 
@@ -13,6 +14,8 @@ int main() {
   Session session;
   assert(session.screen() == SessionScreen::ChooseLength);
   session.press('1');
+  assert(session.screen() == SessionScreen::PreflightWarning);
+  session.press('#');
   assert(session.screen() == SessionScreen::EnterRolls && session.requiredRolls() == 50);
   session.press('7');
   assert(session.rollCount() == 0);

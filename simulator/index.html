@@ -69,6 +69,8 @@
       } else if (wasm._session_screen() === 0) {
         screen.innerHTML = `<div class="title title-cyan" style="font-size:1.55em">Dice Seed Gen</div><div class="choice choice-green">1: 12 words</div><div class="choice-detail">50 dice rolls</div><div class="choice choice-amber">2: 24 words</div><div class="choice-detail">99 dice rolls</div>`;
       } else if (wasm._session_screen() === 1) {
+        screen.innerHTML = `<div class="title">Before you roll</div><div>Use fair, private dice.</div><div>Power loss clears this</div><div>session. Keep roll notes</div><div>until backup is verified.</div><div class="yellow footer"><span>*: cancel</span><span>#: continue</span></div>`;
+      } else if (wasm._session_screen() === 2) {
         const count = wasm._session_roll_count(), required = wasm._session_required_rolls();
         let enteredRolls = "";
         for (let i = 0; i < count; i++) enteredRolls += String.fromCharCode(wasm._session_roll_at(i));
@@ -78,18 +80,18 @@
           return enteredRolls.slice(row * 25, row * 25 + rowLength).padEnd(rowLength, ".");
         }).join("<br>");
         screen.innerHTML = `<div class="title"><span>${required === 50 ? "12" : "24"} words</span><span style="float:right">${count} / ${required}</span></div><div class="rolls">${rollGrid}</div><div class="footer ${count === required ? "green" : "yellow"}"><span>*: undo</span><span>#: ${count === required ? "generate" : "main menu"}</span></div>`;
-      } else if (wasm._session_screen() === 2) {
+      } else if (wasm._session_screen() === 3) {
         const page = wasm._session_page(), count = wasm._session_word_count(), from = page * 4;
         const lines = Array.from({length: Math.min(4, count - from)}, (_, i) => `${String(from + i + 1).padStart(2, " ")}. ${wordFromIndex(wasm._session_word_index_at(from + i))}`).join("<br>");
         screen.innerHTML = `<div class="title">Write words ${from + 1}-${Math.min(from + 4, count)}</div>${lines}<div class="yellow footer"><span>*: previous</span><span>#: next</span></div>`;
-      } else if (wasm._session_screen() === 3) {
-        screen.innerHTML = `<div class="title">Verify backup?</div><div>Check every written word</div><div class="yellow footer"><span>*: skip</span><span>#: start quiz</span></div>`;
       } else if (wasm._session_screen() === 4) {
+        screen.innerHTML = `<div class="title">Verify backup?</div><div>Check every written word</div><div class="yellow footer"><span>*: skip</span><span>#: start quiz</span></div>`;
+      } else if (wasm._session_screen() === 5) {
         const choices = Array.from({length: 4}, (_, i) => `${i + 1}. ${wordFromIndex(wasm._session_quiz_choice_at(i))}`).join("<br>");
         const incorrect = wasm._session_quiz_incorrect();
         const quizFooter = incorrect ? `<span style="color:#ff6b6b">Incorrect. Try again.</span><span>*: skip</span>` : "*: skip verification";
         screen.innerHTML = `<div class="title">Verify ${wasm._session_quiz_position() + 1}/${wasm._session_word_count()}</div><div>What is word ${wasm._session_quiz_word_number()}?</div>${choices}<div class="yellow footer">${quizFooter}</div>`;
-      } else if (wasm._session_screen() === 5) {
+      } else if (wasm._session_screen() === 6) {
         screen.innerHTML = `<div class="title">Skip verification?</div><div class="yellow">Your backup is untested.</div><div class="footer"><span>*: resume</span><span>#: skip</span></div>`;
       } else {
         screen.innerHTML = `<div class="title">${wasm._session_verified() ? "Backup verified" : "Verification skipped"}</div><div class="yellow">Seed has been cleared.</div><div class="footer">#: clear and restart</div>`;
@@ -116,6 +118,8 @@
       wasm._session_reset();
       if (state === "start") return;
       wasm._session_press("2".charCodeAt(0));
+      if (state === "warning") return;
+      wasm._session_press("#".charCodeAt(0));
       for (const roll of publicArticleRolls) wasm._session_press(roll.charCodeAt(0));
       if (state === "rolls") return;
       wasm._session_press("#".charCodeAt(0));

@@ -5,7 +5,7 @@
 
 #include "mnemonic.h"
 
-enum class SessionScreen : uint8_t { ChooseLength, EnterRolls, ShowWords, VerifyPrompt, Quiz, ConfirmSkipQuiz, ClearWords };
+enum class SessionScreen : uint8_t { ChooseLength, PreflightWarning, EnterRolls, ShowWords, VerifyPrompt, Quiz, ConfirmSkipQuiz, ClearWords };
 
 class Session {
  public:
@@ -21,8 +21,12 @@ class Session {
         if (key == '1' || key == '2') {
           clear();
           requiredRolls_ = key == '1' ? 50 : 99;
-          screen_ = SessionScreen::EnterRolls;
+          screen_ = SessionScreen::PreflightWarning;
         }
+        break;
+      case SessionScreen::PreflightWarning:
+        if (key == '#') screen_ = SessionScreen::EnterRolls;
+        else if (key == '*') clear();
         break;
       case SessionScreen::EnterRolls:
         if (key >= '1' && key <= '6' && rollCount_ < requiredRolls_) {
