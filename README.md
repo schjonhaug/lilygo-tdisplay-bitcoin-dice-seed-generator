@@ -67,7 +67,7 @@ Each of the 12 or 24 words is tested in shuffled order. Select one of four choic
 
 ## Build
 
-The build script installs the pinned ESP32 core plus `Keypad` and `TFT_eSPI`, then configures the display driver for the T-Display pins.
+The build script installs Arduino-ESP32 `3.3.11`, `Keypad@3.1.1`, and `TFT_eSPI@2.5.43`, then configures the display driver for the T-Display pins.
 
 ```sh
 git clone https://github.com/schjonhaug/lilygo-tdisplay-dice-seed.git
