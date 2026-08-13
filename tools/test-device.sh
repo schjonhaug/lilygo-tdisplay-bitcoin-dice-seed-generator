@@ -2,7 +2,7 @@
 set -eu
 
 test "$#" = 1 || { echo "usage: $0 <serial-port>" >&2; exit 1; }
-test -f build-device-test/lilygo-tdisplay-dice-seed.ino.bin || { echo "Run ./build.sh --device-test first" >&2; exit 1; }
+test -f build-device-test/lilygo-tdisplay-bitcoin-dice-seed-generator.ino.bin || { echo "Run ./build.sh --device-test first" >&2; exit 1; }
 binary="build-test-device"
 trap 'rm -f "$binary"' EXIT
 c++ -std=c++17 -Wall -Wextra -Werror tools/test-device.cpp -o "$binary"
