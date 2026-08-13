@@ -88,7 +88,8 @@ void capture(const char* name) {
   if (!image) fail("could not create screenshot");
   fprintf(image, "P6\n%zu %zu\n255\n", width, height);
   for (size_t i = 0; i < width * height; ++i) {
-    const uint16_t pixel = pixels[i];
+    const uint16_t stored = pixels[i];
+    const uint16_t pixel = static_cast<uint16_t>((stored << 8) | (stored >> 8));
     const uint8_t rgb[] = {static_cast<uint8_t>(((pixel >> 11) & 0x1f) * 255 / 31), static_cast<uint8_t>(((pixel >> 5) & 0x3f) * 255 / 63), static_cast<uint8_t>((pixel & 0x1f) * 255 / 31)};
     if (fwrite(rgb, sizeof(rgb), 1, image) != 1) fail("could not write screenshot");
   }
