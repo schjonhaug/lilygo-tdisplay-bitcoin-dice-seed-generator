@@ -1,4 +1,4 @@
-// Generated from iancoleman-bip39/src/js/wordlist_english.js.
+// Vendored BIP39 English wordlist from https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt
 #pragma once
 
 static const char kEnglishWords[] =

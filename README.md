@@ -91,6 +91,12 @@ The test suite checks these public compatibility vectors:
 
 For an independent check, run SeedSigner locally or use an offline copy of [Ian Coleman's BIP39 tool](https://github.com/iancoleman/bip39) with entropy interpreted as `Base 10 [0-9]` or `Hex [0-9A-F]`, not `Dice [1-6]`.
 
+The checked-in BIP39 English wordlist is vendored from [BIP-39's canonical `english.txt`](https://github.com/bitcoin/bips/blob/master/bip-0039/english.txt). Its header has SHA-256 `6937f1ad5f744f1bc79f3bf9301b3559a4ecf83d2cb1f762ac3081cd75c9c7fe`.
+
+## Releases
+
+See [RELEASING.md](RELEASING.md) for the required tests, firmware SHA-256 publication, tag, and on-device verification steps. See [SECURITY.md](SECURITY.md) for the threat model and private vulnerability reporting.
+
 ## References
 
 - [SeedSigner dice verification guide](https://github.com/SeedSigner/seedsigner/blob/main/docs/dice_verification.md)
