@@ -43,13 +43,13 @@ void drawChooseLength() {
   tft.drawString("Dice Seed Gen", 5, 5, 4);
   tft.drawFastHLine(0, 39, 240, TFT_DARKGREY);
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
-  tft.drawString("1: 12 words", 17, 43, 4);
+  tft.drawString("1: 12 words", 5, 43, 4);
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
-  tft.drawString("50 dice rolls", 22, 72, 2);
+  tft.drawString("50 dice rolls", 10, 70, 2);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawString("2: 24 words", 17, 84, 4);
+  tft.drawString("2: 24 words", 5, 87, 4);
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
-  tft.drawString("99 dice rolls", 22, 113, 2);
+  tft.drawString("99 dice rolls", 10, 114, 2);
 }
 
 void drawPreflightWarning() {
