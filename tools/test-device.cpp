@@ -176,6 +176,7 @@ int main(int argc, char** argv) {
   capture("rolls-empty-24");
   sendKeys(kRolls99);
   for (unsigned count = 1; count <= 99; ++count) expect("rolls", count, 0, 0, 0, 0);
+  capture("rolls-99-complete");
   sendKeys("#");
   expect("words", 99, 24, 0, 0, 0);
   capture("word-24-01");
@@ -187,9 +188,13 @@ int main(int argc, char** argv) {
   expect("verify-prompt", 99, 24, 23, 0, 0);
   capture("verify-prompt-24");
   sendKeys("#");
-  for (unsigned quiz = 0; quiz < 24; ++quiz) {
+  expect("quiz", 99, 24, 23, 0, 0, &correct);
+  capture("quiz-24");
+  char answer[] = {static_cast<char>('0' + correct), '\0'};
+  sendKeys(answer);
+  for (unsigned quiz = 1; quiz < 24; ++quiz) {
     expect("quiz", 99, 24, 23, quiz, 0, &correct);
-    char answer[] = {static_cast<char>('0' + correct), '\0'};
+    answer[0] = static_cast<char>('0' + correct);
     sendKeys(answer);
   }
   expect("clear-words", 0, 0, 0, 0, 1);

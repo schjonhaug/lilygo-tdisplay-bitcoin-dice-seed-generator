@@ -27,7 +27,7 @@ This is a dedicated, offline dice-to-BIP39 generator, not a tamper-resistant har
 
 ## Screens
 
-Screens below are rendered from the local WebAssembly simulator using the public 99-roll test vector from this project's article.
+Screens below are captured from the device framebuffer using the public 99-roll test vector from this project's article.
 
 <p align="center">
   <img src="assets/screenshots/start.png" alt="Select 12 or 24 words" width="240">
