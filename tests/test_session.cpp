@@ -37,9 +37,7 @@ int main() {
   assert(session.screen() == SessionScreen::EnterRolls && session.rollCount() == 50);
   session.press('#');
   assert(session.screen() == SessionScreen::ShowWords && session.page() == 0);
-  session.press('#');
-  session.press('#');
-  session.press('#');
+  for (size_t i = 0; i < session.wordCount(); ++i) session.press('#');
   assert(session.screen() == SessionScreen::VerifyPrompt);
   session.press('*');
   assert(session.screen() == SessionScreen::ConfirmSkipQuiz);
@@ -69,7 +67,8 @@ int main() {
 
   enter(session, rolls);
   session.press('#');
-  session.press('#'); session.press('#'); session.press('#');
+  for (size_t i = 0; i < session.wordCount(); ++i) session.press('#');
+  assert(session.screen() == SessionScreen::VerifyPrompt);
   session.press('#');
   for (size_t question = 0; question < 12; ++question) {
     const uint16_t correct = session.wordIndexAt(session.quizWordNumber() - 1);

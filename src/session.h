@@ -10,7 +10,7 @@ enum class SessionScreen : uint8_t { ChooseLength, PreflightWarning, EnterRolls,
 class Session {
  public:
   static constexpr size_t kMaxRolls = 99;
-  static constexpr size_t kWordsPerPage = 4;
+  static constexpr size_t kWordsPerPage = 1;
 
   Session() { clear(); }
   ~Session() { clear(); }

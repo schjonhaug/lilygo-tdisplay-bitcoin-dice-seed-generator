@@ -19,7 +19,6 @@ Keypad keypad = Keypad(makeKeymap(keyMap), rowPins, columnPins, kRows, kColumns)
 TFT_eSPI tft;
 
 Session session;
-constexpr const char* kFirmwareVersion = "v0.1.0";
 
 void header(const char* title) {
   tft.fillScreen(TFT_BLACK);
@@ -44,16 +43,13 @@ void drawChooseLength() {
   tft.drawString("Dice Seed Gen", 5, 5, 4);
   tft.drawFastHLine(0, 39, 240, TFT_DARKGREY);
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
-  tft.drawString("1: 12 words", 17, 45, 4);
+  tft.drawString("1: 12 words", 17, 43, 4);
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
-  tft.drawString("50 dice rolls", 22, 73, 1);
+  tft.drawString("50 dice rolls", 22, 72, 2);
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawString("2: 24 words", 17, 92, 4);
+  tft.drawString("2: 24 words", 17, 84, 4);
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
-  tft.drawString("99 dice rolls", 22, 120, 1);
-  tft.setTextDatum(TR_DATUM);
-  tft.drawString(kFirmwareVersion, 235, 122, 1);
-  tft.setTextDatum(TL_DATUM);
+  tft.drawString("99 dice rolls", 22, 113, 2);
 }
 
 void drawPreflightWarning() {
@@ -111,19 +107,14 @@ void drawRollEntry() {
 void drawWords() {
   char title[24];
   char word[12];
-  snprintf(title, sizeof(title), "Write words %u-%u", static_cast<unsigned>(session.page() * Session::kWordsPerPage + 1),
-           static_cast<unsigned>((session.page() + 1) * Session::kWordsPerPage > session.wordCount() ? session.wordCount() : (session.page() + 1) * Session::kWordsPerPage));
+  const size_t index = session.page();
+  snprintf(title, sizeof(title), "Word %u / %u", static_cast<unsigned>(index + 1), static_cast<unsigned>(session.wordCount()));
   header(title);
-  for (size_t i = 0; i < Session::kWordsPerPage; ++i) {
-    const size_t index = session.page() * Session::kWordsPerPage + i;
-    if (index >= session.wordCount()) break;
-    wordAt(session.wordIndexAt(index), word, sizeof(word));
-    char numbered[20];
-    snprintf(numbered, sizeof(numbered), "%2u. %s", static_cast<unsigned>(index + 1), word);
-    tft.drawString(numbered, 8, 31 + i * 20, 2);
-    secureClear(word, sizeof(word));
-    secureClear(numbered, sizeof(numbered));
-  }
+  wordAt(session.wordIndexAt(index), word, sizeof(word));
+  tft.setTextDatum(TC_DATUM);
+  tft.drawString(word, 120, 59, 4);
+  tft.setTextDatum(TL_DATUM);
+  secureClear(word, sizeof(word));
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
   drawFooter("*: previous", "#: next");
 }
@@ -147,7 +138,7 @@ void drawQuiz() {
   for (size_t i = 0; i < 4; ++i) {
     wordAt(session.quizChoiceAt(i), word, sizeof(word));
     snprintf(line, sizeof(line), "%u. %s", static_cast<unsigned>(i + 1), word);
-    tft.drawString(line, 8, 45 + i * 17, 2);
+    tft.drawString(line, 8, 45 + i * 20, 2);
     secureClear(word, sizeof(word));
   }
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);

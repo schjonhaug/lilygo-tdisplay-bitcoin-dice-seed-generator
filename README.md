@@ -59,7 +59,7 @@ Screens below are rendered from the local WebAssembly simulator using the public
 
 **Review mnemonic**
 
-`*` shows the previous word page and `#` shows the next page. On the first word page, `*` returns to the completed roll grid. After the final page, `#` opens the backup-verification prompt.
+Each mnemonic word is shown individually in a large font. `*` shows the previous word and `#` shows the next. On the first word, `*` returns to the completed roll grid. After the final word, `#` opens the backup-verification prompt.
 
 **Verify backup**
 

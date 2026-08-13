@@ -18,7 +18,7 @@
     #screen .footer { display: flex; justify-content: space-between; margin-top: auto; }
     #screen .rolls { font-size: 1.1em; letter-spacing: 0.04em; min-height: 2.5em; }
     #screen .choice { font-size: 1.45em; line-height: 1.1; margin-top: 0.3em; }
-    #screen .choice-detail { margin-left: 0.5em; opacity: 0.75; }
+    #screen .choice-detail { font-size: 1.15em; margin-left: 0.5em; opacity: 0.75; }
     #screen .choice-green { color: #64d98b; }
     #screen .choice-amber { color: #f4d35e; }
     #screen .title-cyan { color: #71d8e9; }
@@ -81,9 +81,9 @@
         }).join("<br>");
         screen.innerHTML = `<div class="title"><span>${required === 50 ? "12" : "24"} words</span><span style="float:right">${count} / ${required}</span></div><div class="rolls">${rollGrid}</div><div class="footer ${count === required ? "green" : "yellow"}"><span>*: undo</span><span>#: ${count === required ? "generate" : "main menu"}</span></div>`;
       } else if (wasm._session_screen() === 3) {
-        const page = wasm._session_page(), count = wasm._session_word_count(), from = page * 4;
-        const lines = Array.from({length: Math.min(4, count - from)}, (_, i) => `${String(from + i + 1).padStart(2, " ")}. ${wordFromIndex(wasm._session_word_index_at(from + i))}`).join("<br>");
-        screen.innerHTML = `<div class="title">Write words ${from + 1}-${Math.min(from + 4, count)}</div>${lines}<div class="yellow footer"><span>*: previous</span><span>#: next</span></div>`;
+        const page = wasm._session_page(), count = wasm._session_word_count();
+        const word = wordFromIndex(wasm._session_word_index_at(page));
+        screen.innerHTML = `<div class="title">Word ${page + 1} / ${count}</div><div style="font-size:2.1em; font-weight:bold; margin-top:1.1em; text-align:center">${word}</div><div class="yellow footer"><span>*: previous</span><span>#: next</span></div>`;
       } else if (wasm._session_screen() === 4) {
         screen.innerHTML = `<div class="title">Verify backup?</div><div>Check every written word</div><div class="yellow footer"><span>*: skip</span><span>#: start quiz</span></div>`;
       } else if (wasm._session_screen() === 5) {
@@ -124,7 +124,7 @@
       if (state === "rolls") return;
       wasm._session_press("#".charCodeAt(0));
       if (state === "words") return;
-      for (let i = 0; i < 6; ++i) wasm._session_press("#".charCodeAt(0));
+      for (let i = 0; i < wasm._session_word_count(); ++i) wasm._session_press("#".charCodeAt(0));
       if (state === "verify") return;
       wasm._session_press("#".charCodeAt(0));
     }

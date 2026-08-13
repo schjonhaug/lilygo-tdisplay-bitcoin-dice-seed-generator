@@ -30,9 +30,7 @@ for (const roll of "12345612345612345612345612345612345612345612345612") module.
 if (module._session_roll_count() !== 50) throw new Error("Session did not record rolls");
 module._session_press("#".charCodeAt(0));
 if (module._session_screen() !== 3 || module._session_word_count() !== 12) throw new Error("Session did not generate words");
-module._session_press("#".charCodeAt(0));
-module._session_press("#".charCodeAt(0));
-module._session_press("#".charCodeAt(0));
+for (let i = 0; i < module._session_word_count(); ++i) module._session_press("#".charCodeAt(0));
 if (module._session_screen() !== 4) throw new Error("Session did not reach verification prompt");
 module._session_press("#".charCodeAt(0));
 if (module._session_screen() !== 5) throw new Error("Session did not start quiz");
