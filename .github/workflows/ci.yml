@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: mymindstorm/setup-emsdk@v16
+      - uses: emscripten-core/setup-emsdk@v16
       - name: Run native tests
         run: ./tests/run.sh
       - name: Build and test WebAssembly simulator
